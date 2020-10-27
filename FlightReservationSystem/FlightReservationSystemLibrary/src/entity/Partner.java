@@ -5,7 +5,7 @@
  */
 package entity;
 
-import enumeration.PartnerRole;
+import util.enumeration.PartnerRole;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;

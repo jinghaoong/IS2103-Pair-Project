@@ -5,7 +5,7 @@
  */
 package entity;
 
-import enumeration.EmployeeRole;
+import util.enumeration.EmployeeRole;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
