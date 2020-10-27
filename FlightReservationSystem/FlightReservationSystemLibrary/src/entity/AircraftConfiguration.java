@@ -5,7 +5,6 @@
  */
 package entity;
 
-import util.enumeration.CabinClass;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,29 +40,21 @@ public class AircraftConfiguration implements Serializable {
     private AircraftType aircraftType;
     
     @OneToMany(mappedBy = "aircraftConfig")
-    private List<CabinClass> cabinClasses;
+    private List<CabinClassConfiguration> cabinClassConfigs;
     
     @OneToOne(optional = true)
     private Flight flight;
 
     public AircraftConfiguration() {
-        this.cabinClasses = new ArrayList<>();
+        this.cabinClassConfigs = new ArrayList<>();
     }
 
-    public AircraftConfiguration(String aircraftConfigName, Integer numberOfCabinClass, AircraftType aircraftType, List<CabinClass> cabinClasses) {
-        this();
+    public AircraftConfiguration(String aircraftConfigName, Integer numberOfCabinClass, Integer maximumSeatCapacity, AircraftType aircraftType, List<CabinClassConfiguration> cabinClassConfigs) {
         this.aircraftConfigName = aircraftConfigName;
         this.numberOfCabinClass = numberOfCabinClass;
+        this.maximumSeatCapacity = maximumSeatCapacity;
         this.aircraftType = aircraftType;
-        this.cabinClasses = cabinClasses;
-    }
-
-    public Long getAircraftConfigId() { 
-        return aircraftConfigId;
-    }
-
-    public void setAircraftConfigId(Long aircraftConfigId) {
-        this.aircraftConfigId = aircraftConfigId;
+        this.cabinClassConfigs = cabinClassConfigs;
     }
 
     @Override
@@ -91,12 +82,12 @@ public class AircraftConfiguration implements Serializable {
         return "entity.AircraftConfigurationEntity[ id=" + aircraftConfigId + " ]";
     }
 
-    public AircraftType getAircraftType() {
-        return aircraftType;
+    public Long getAircraftConfigId() { 
+        return aircraftConfigId;
     }
 
-    public void setAircraftType(AircraftType aircraftType) {
-        this.aircraftType = aircraftType;
+    public void setAircraftConfigId(Long aircraftConfigId) {
+        this.aircraftConfigId = aircraftConfigId;
     }
 
     public String getAircraftConfigName() {
@@ -107,7 +98,7 @@ public class AircraftConfiguration implements Serializable {
         this.aircraftConfigName = aircraftConfigName;
     }
 
-    public int getNumberOfCabinClass() {
+    public Integer getNumberOfCabinClass() {
         return numberOfCabinClass;
     }
 
@@ -115,12 +106,28 @@ public class AircraftConfiguration implements Serializable {
         this.numberOfCabinClass = numberOfCabinClass;
     }
 
-    public List<CabinClass> getCabinClasses() {
-        return cabinClasses;
+    public Integer getMaximumSeatCapacity() {
+        return maximumSeatCapacity;
     }
 
-    public void setCabinClasses(List<CabinClass> cabinClasses) {
-        this.cabinClasses = cabinClasses;
+    public void setMaximumSeatCapacity(Integer maximumSeatCapacity) {
+        this.maximumSeatCapacity = maximumSeatCapacity;
+    }
+
+    public AircraftType getAircraftType() {
+        return aircraftType;
+    }
+
+    public void setAircraftType(AircraftType aircraftType) {
+        this.aircraftType = aircraftType;
+    }
+
+    public List<CabinClassConfiguration> getCabinClassConfigs() {
+        return cabinClassConfigs;
+    }
+
+    public void setCabinClassConfigs(List<CabinClassConfiguration> cabinClassConfigs) {
+        this.cabinClassConfigs = cabinClassConfigs;
     }
 
     public Flight getFlight() {
