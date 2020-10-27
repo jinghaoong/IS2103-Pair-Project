@@ -49,11 +49,15 @@ public class FlightSchedulePlan implements Serializable {
     @OneToMany(mappedBy = "flightSchedulePlan")
     private List<FlightSchedule> flightSchedules;
     
+    @OneToMany(mappedBy = "flightSchedulePlan")
+    private List<Fare> fares;
+    
     @OneToOne(optional = true)
     private FlightSchedulePlan returnFlightSchedulePlan;
-
+    
     public FlightSchedulePlan() {
         this.flightSchedules = new ArrayList<>();
+        this.fares = new ArrayList<>();
     }
 
     public FlightSchedulePlan(String flightNumber, FlightScheduleType flightScheduleType) {
@@ -149,6 +153,14 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setReturnFlightSchedulePlan(FlightSchedulePlan returnFlightSchedulePlan) {
         this.returnFlightSchedulePlan = returnFlightSchedulePlan;
+    }
+
+    public List<Fare> getFares() {
+        return fares;
+    }
+
+    public void setFares(List<Fare> fares) {
+        this.fares = fares;
     }
     
 }

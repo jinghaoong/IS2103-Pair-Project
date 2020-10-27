@@ -33,14 +33,18 @@ public class Fare implements Serializable {
     
     @ManyToOne(optional = false)
     private CabinClassConfiguration cabinClassConfig;
+    
+    @ManyToOne(optional = false)
+    private FlightSchedulePlan flightSchedulePlan;
 
     public Fare() {
     }
 
-    public Fare(String fareBasisCode, BigDecimal fareAmount, CabinClassConfiguration cabinClassConfig) {
+    public Fare(String fareBasisCode, BigDecimal fareAmount, CabinClassConfiguration cabinClassConfig, FlightSchedulePlan flightSchedulePlan) {
         this.fareBasisCode = fareBasisCode;
         this.fareAmount = fareAmount;
         this.cabinClassConfig = cabinClassConfig;
+        this.flightSchedulePlan = flightSchedulePlan;
     }
 
     @Override
@@ -98,6 +102,14 @@ public class Fare implements Serializable {
 
     public void setCabinClassConfig(CabinClassConfiguration cabinClassConfig) {
         this.cabinClassConfig = cabinClassConfig;
+    }
+
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
     }
     
 }
