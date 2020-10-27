@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -34,6 +35,9 @@ public class FlightSchedule implements Serializable {
     private Integer estimatedFlightDurationHour;
     @Column(nullable = false)
     private Integer estimatedFlightDurationMinute;
+    
+    @ManyToOne(optional = true)
+    private FlightSchedulePlan flightSchedulePlan;
 
     public FlightSchedule() {
     }
@@ -76,7 +80,7 @@ public class FlightSchedule implements Serializable {
     public void setFlightScheduleId(Long flightScheduleId) {
         this.flightScheduleId = flightScheduleId;
     }
-
+    
     public Date getDateTime() {
         return dateTime;
     }
@@ -100,5 +104,13 @@ public class FlightSchedule implements Serializable {
     public void setEstimatedFlightDurationMinute(Integer estimatedFlightDurationMinute) {
         this.estimatedFlightDurationMinute = estimatedFlightDurationMinute;
     }
-    
+
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
+    }
+
 }

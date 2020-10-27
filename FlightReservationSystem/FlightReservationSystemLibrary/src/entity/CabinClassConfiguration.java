@@ -6,6 +6,8 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import util.enumeration.CabinClass;
 
 /**
@@ -41,11 +44,16 @@ public class CabinClassConfiguration implements Serializable {
     
     @ManyToOne(optional = false)
     AircraftConfiguration aircraftConfig;
+    
+    @OneToMany(mappedBy = "cabinClassConfig")
+    List<Fare> fares;
 
     public CabinClassConfiguration() {
+        this.fares = new ArrayList<>();
     }
 
     public CabinClassConfiguration(CabinClass cabinClass, Integer numberOfAisles, Integer numberOfRows, Integer numberOfSeatsAbreast, String seatingConfig, AircraftConfiguration aircraftConfig) {
+        this();
         this.cabinClass = cabinClass;
         this.numberOfAisles = numberOfAisles;
         this.numberOfRows = numberOfRows;
@@ -133,6 +141,14 @@ public class CabinClassConfiguration implements Serializable {
 
     public void setAircraftConfig(AircraftConfiguration aircraftConfig) {
         this.aircraftConfig = aircraftConfig;
+    }
+
+    public List<Fare> getFares() {
+        return fares;
+    }
+
+    public void setFares(List<Fare> fares) {
+        this.fares = fares;
     }
     
 }

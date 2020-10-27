@@ -37,6 +37,8 @@ public class Airport implements Serializable {
     private String stateProvince;
     @Column(nullable = false, length = 32)
     private String country;
+    @Column(nullable = false)
+    private Integer timeZone;
     
     @OneToMany(mappedBy = "originAirport")
     private List<FlightRoute> originFlightRoutes;
@@ -49,13 +51,14 @@ public class Airport implements Serializable {
         this.destinationFlightRoutes = new ArrayList<>();
     }
 
-    public Airport(String airportName, String airportCode, String city, String stateprovince, String country) {
+    public Airport(String airportName, String airportCode, String city, String stateprovince, String country, Integer timeZone) {
         this();
         this.airportName = airportName;
         this.airportCode = airportCode;
         this.city = city;
         this.stateProvince = stateprovince;
         this.country = country;
+        this.timeZone = timeZone;
     }
     
     @Override
@@ -131,6 +134,14 @@ public class Airport implements Serializable {
         this.country = country;
     }
 
+    public Integer getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(Integer timeZone) {
+        this.timeZone = timeZone;
+    }
+    
     public List<FlightRoute> getOriginFlightRoutes() {
         return originFlightRoutes;
     }
@@ -146,5 +157,7 @@ public class Airport implements Serializable {
     public void setDestinationFlightRoutes(List<FlightRoute> destinationFlightRoutes) {
         this.destinationFlightRoutes = destinationFlightRoutes;
     }
+    
+    
     
 }
