@@ -12,8 +12,8 @@ import entity.Partner;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
+import javax.ejb.Startup;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import util.enumeration.EmployeeRole;
 import util.enumeration.PartnerRole;
 
@@ -23,9 +23,11 @@ import util.enumeration.PartnerRole;
  */
 @Singleton
 @LocalBean
+@Startup
 public class DataInitFRSManagementSessionBean {
-    
-    @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
+
+    // Add business logic below. (Right-click in editor and choose
+    // "Insert Code > Add Business Method")@PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
     
     @PostConstruct
@@ -79,4 +81,5 @@ public class DataInitFRSManagementSessionBean {
             System.err.println(e);
         }
     }
+
 }

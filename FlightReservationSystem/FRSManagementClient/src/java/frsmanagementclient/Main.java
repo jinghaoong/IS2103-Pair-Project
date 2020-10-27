@@ -7,7 +7,7 @@ package frsmanagementclient;
 
 /**
  *
- * @author yylow
+ * @author jinghao
  */
 public class Main {
 

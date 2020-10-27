@@ -50,3 +50,8 @@ hs_err_pid*
 # Documents
 *.docx
 *.pdf
+/backup/FRSManagementClient/nbproject/private/
+/backup/FRSReservationClient/nbproject/private/
+/backup/FlightReservationSystem/FlightReservationSystem-ejb/nbproject/private/
+/backup/FlightReservationSystem/nbproject/private/
+/backup/FlightReservationSystemLibrary/nbproject/private/

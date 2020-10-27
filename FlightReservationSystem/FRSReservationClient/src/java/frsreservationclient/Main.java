@@ -7,7 +7,7 @@ package frsreservationclient;
 
 /**
  *
- * @author yylow
+ * @author jinghao
  */
 public class Main {
 
