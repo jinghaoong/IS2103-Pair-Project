@@ -18,7 +18,7 @@ public interface AircraftConfigurationSessionBeanRemote {
 
     public AircraftConfiguration createAircraftConfiguration(AircraftConfiguration newAircraftConfig);
 
-    public List<AircraftConfiguration> viewAllAircraftConfigs();
+    public List<AircraftConfiguration> retrieveAllAircraftConfigs();
 
     public AircraftConfiguration viewAircraftConfig(String name);
     

@@ -24,32 +24,37 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
     private EntityManager em;
 
     @Override
-    public Long createAircraftConfiguration(AircraftConfiguration newAircraftConfig) {
+    public AircraftConfiguration createAircraftConfiguration(AircraftConfiguration newAircraftConfig) {
         
         em.persist(newAircraftConfig);
         em.flush();
         
-        return newAircraftConfig.getAircraftConfigId();
+        return newAircraftConfig;
     }
     
     @Override
-    public List<AircraftConfiguration> viewAllAircraftConfigs() {
+    public List<AircraftConfiguration> retrieveAllAircraftConfigs() {
         
         TypedQuery<AircraftConfiguration> query = em.createQuery("SELECT a FROM AircraftConfiguration a", AircraftConfiguration.class);
         List<AircraftConfiguration> aircraftConfigs = query.getResultList();
+        // sort by aircraft type
+        aircraftConfigs.sort((AircraftConfiguration ac1, AircraftConfiguration ac2) -> 
+                    ac1.getAircraftConfigName().compareTo(ac2.getAircraftConfigName()));
+        aircraftConfigs.sort((AircraftConfiguration ac1, AircraftConfiguration ac2) -> 
+                    ac1.getAircraftType().getAircraftTypeName().compareTo(ac2.getAircraftType().getAircraftTypeName()));
         
         return aircraftConfigs;
     }
 
     @Override
-    public AircraftConfiguration viewAircraftConfig(String name) {
+    public AircraftConfiguration viewAircraftConfig(String aircraftConfigName) {
         
-        Query query = em.createQuery("SELECT a FROM AircraftConfiguration a where a.aircraftConfigName = :aircraftConfigName")
-                .setParameter("aircraftConfigName", name);
+        Query query = em.createQuery("SELECT a FROM AircraftConfiguration a WHERE a.aircraftConfigName = :aircraftConfigName")
+                .setParameter("aircraftConfigName", aircraftConfigName);
         // try catch
-        AircraftConfiguration ac = (AircraftConfiguration) query.getSingleResult();
+        AircraftConfiguration aircraftConfig = (AircraftConfiguration) query.getSingleResult();
         
-        return ac;
+        return aircraftConfig;
     }
     
 }

@@ -18,8 +18,8 @@ public interface FlightRouteSessionBeanRemote {
 
     public FlightRoute createFlightRoute(FlightRoute newFlightRoute);
 
-    public List<FlightRoute> viewAllFlightRoutes();
+    public List<FlightRoute> retrieveAllFlightRoutes();
 
-    public void deleteFlightRoute(FlightRoute flightRoute);
+    public void deleteFlightRoute(Long flightRouteId);
     
 }
