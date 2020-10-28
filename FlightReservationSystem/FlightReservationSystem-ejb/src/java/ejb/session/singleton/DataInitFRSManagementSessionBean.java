@@ -14,6 +14,7 @@ import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import util.enumeration.EmployeeRole;
 import util.enumeration.PartnerRole;
 
@@ -26,18 +27,18 @@ import util.enumeration.PartnerRole;
 @Startup
 public class DataInitFRSManagementSessionBean {
 
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")@PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
-    private EntityManager em;
+    @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
+    private EntityManager em; 
     
     @PostConstruct
-    private void PostConstruct() {
+    public void postConstruct() {
         
         Employee employee = em.find(Employee.class, 1L);
-        
+                
         if (employee == null) {
             initData();
         }
+        
     }
     
     private void initData() {
