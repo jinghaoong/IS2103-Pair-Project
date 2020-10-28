@@ -34,7 +34,7 @@ public class FlightSchedulePlan implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightSchedulePlanId;
-    @Column(nullable = false, length = 16, unique = true)
+    @Column(nullable = false, length = 16)
     private String flightNumber;
     @Enumerated(EnumType.STRING)
     private FlightScheduleType flightScheduleType;
@@ -161,6 +161,15 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setFares(List<Fare> fares) {
         this.fares = fares;
+    }
+    
+    
+    public void addFlightSchedule(FlightSchedule flightSchedule) {
+        this.flightSchedules.add(flightSchedule);
+    }
+    
+    public void addFare(Fare fare) {
+        this.fares.add(fare);
     }
     
 }

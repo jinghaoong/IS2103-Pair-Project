@@ -36,6 +36,9 @@ public class Flight implements Serializable {
     
     @OneToOne(optional = false)
     private AircraftConfiguration aircraftConfig;
+    
+    @OneToOne(optional = true)
+    private Flight returnFlight;
 
     public Flight() {
     }
@@ -110,6 +113,14 @@ public class Flight implements Serializable {
 
     public void setAircraftConfig(AircraftConfiguration aircraftConfig) {
         this.aircraftConfig = aircraftConfig;
+    }
+
+    public Flight getReturnFlight() {
+        return returnFlight;
+    }
+
+    public void setReturnFlight(Flight returnFlight) {
+        this.returnFlight = returnFlight;
     }
     
 }
