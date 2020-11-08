@@ -6,12 +6,15 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 /**
@@ -32,23 +35,29 @@ public class Flight implements Serializable {
     private Boolean enabled;
     
     @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private FlightRoute flightRoute;
     
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private AircraftConfiguration aircraftConfig;
     
     @OneToOne(optional = true)
+    @JoinColumn(nullable = false)
     private Flight returnFlight;
+    
+    @OneToMany(mappedBy = "flight")
+    private List<FlightSchedule> flightSchedules;
 
+    
     public Flight() {
     }
 
-    public Flight(String flightNumber, Boolean enabled, FlightRoute flightRoute, AircraftConfiguration aircraftConfig) {
+    public Flight(String flightNumber) {
         this.flightNumber = flightNumber;
-        this.enabled = enabled;
-        this.flightRoute = flightRoute;
-        this.aircraftConfig = aircraftConfig;
+        this.enabled = true;
     }
+    
     
     @Override
     public int hashCode() {
@@ -121,6 +130,14 @@ public class Flight implements Serializable {
 
     public void setReturnFlight(Flight returnFlight) {
         this.returnFlight = returnFlight;
+    }
+
+    public List<FlightSchedule> getFlightSchedules() {
+        return flightSchedules;
+    }
+
+    public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
+        this.flightSchedules = flightSchedules;
     }
     
 }

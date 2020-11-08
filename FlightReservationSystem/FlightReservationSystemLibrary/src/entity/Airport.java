@@ -45,7 +45,7 @@ public class Airport implements Serializable {
     
     @OneToMany(mappedBy = "destinationAirport")
     private List<FlightRoute> destinationFlightRoutes;
-           
+    
     public Airport() {
         this.originFlightRoutes = new ArrayList<>();
         this.destinationFlightRoutes = new ArrayList<>();

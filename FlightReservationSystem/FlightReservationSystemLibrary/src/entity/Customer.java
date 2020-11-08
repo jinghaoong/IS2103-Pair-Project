@@ -6,11 +6,13 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -40,6 +42,9 @@ public class Customer implements Serializable {
     private String username;
     @Column(nullable = false, length = 32)
     private String password;
+    
+    @OneToMany(mappedBy = "customer")
+    List<FlightReservation> flightReservations;
 
     public Customer() {
     }

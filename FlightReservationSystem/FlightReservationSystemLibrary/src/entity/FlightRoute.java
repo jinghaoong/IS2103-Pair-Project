@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -33,25 +34,28 @@ public class FlightRoute implements Serializable {
     private Boolean enabled;
     
     @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Airport originAirport;
     
     @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Airport destinationAirport;
+    
+    @OneToOne(optional = true)
+    @JoinColumn(nullable = false)
+    private FlightRoute returnFlightRoute;
     
     @OneToMany(mappedBy = "flightRoute")
     private List<Flight> flights;
     
-    @OneToOne(optional = true)
-    private FlightRoute returnFlightRoute;
 
     public FlightRoute() {
         this.flights = new ArrayList<>();
-        this.returnFlightRoute = null;
     }
 
-    public FlightRoute(Boolean enabled, Airport origin, Airport destination) {
+    public FlightRoute(Airport origin, Airport destination) {
         this();
-        this.enabled = enabled;
+        this.enabled = true;
         this.originAirport = origin;
         this.destinationAirport = destination;
     }

@@ -16,6 +16,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
@@ -49,15 +50,12 @@ public class FlightSchedulePlan implements Serializable {
     @OneToMany(mappedBy = "flightSchedulePlan")
     private List<FlightSchedule> flightSchedules;
     
-    @OneToMany(mappedBy = "flightSchedulePlan")
-    private List<Fare> fares;
-    
     @OneToOne(optional = true)
+    @JoinColumn(nullable = false)
     private FlightSchedulePlan returnFlightSchedulePlan;
     
     public FlightSchedulePlan() {
         this.flightSchedules = new ArrayList<>();
-        this.fares = new ArrayList<>();
     }
 
     public FlightSchedulePlan(String flightNumber, FlightScheduleType flightScheduleType) {
@@ -155,21 +153,8 @@ public class FlightSchedulePlan implements Serializable {
         this.returnFlightSchedulePlan = returnFlightSchedulePlan;
     }
 
-    public List<Fare> getFares() {
-        return fares;
-    }
-
-    public void setFares(List<Fare> fares) {
-        this.fares = fares;
-    }
-    
-    
     public void addFlightSchedule(FlightSchedule flightSchedule) {
         this.flightSchedules.add(flightSchedule);
-    }
-    
-    public void addFare(Fare fare) {
-        this.fares.add(fare);
     }
     
 }

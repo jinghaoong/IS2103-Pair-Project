@@ -13,9 +13,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 /**
  *
@@ -36,24 +36,23 @@ public class AircraftConfiguration implements Serializable {
     @Column(nullable = false)
     private Integer maximumSeatCapacity;
     
-    @ManyToOne(optional = false)
-    private AircraftType aircraftType;
-    
     @OneToMany(mappedBy = "aircraftConfig")
     private List<CabinClassConfiguration> cabinClassConfigs;
     
-    @OneToOne(optional = true)
-    private Flight flight;
-
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private AircraftType aircraftType;
+    
+    
     public AircraftConfiguration() {
         this.cabinClassConfigs = new ArrayList<>();
     }
 
-    public AircraftConfiguration(String aircraftConfigName, Integer numberOfCabinClass, Integer maximumSeatCapacity, AircraftType aircraftType, List<CabinClassConfiguration> cabinClassConfigs) {
+    public AircraftConfiguration(String aircraftConfigName, Integer numberOfCabinClass, Integer maximumSeatCapacity, List<CabinClassConfiguration> cabinClassConfigs) {
+        this();
         this.aircraftConfigName = aircraftConfigName;
         this.numberOfCabinClass = numberOfCabinClass;
         this.maximumSeatCapacity = maximumSeatCapacity;
-        this.aircraftType = aircraftType;
         this.cabinClassConfigs = cabinClassConfigs;
     }
 
@@ -128,14 +127,6 @@ public class AircraftConfiguration implements Serializable {
 
     public void setCabinClassConfigs(List<CabinClassConfiguration> cabinClassConfigs) {
         this.cabinClassConfigs = cabinClassConfigs;
-    }
-
-    public Flight getFlight() {
-        return flight;
-    }
-
-    public void setFlight(Flight flight) {
-        this.flight = flight;
     }
     
 }

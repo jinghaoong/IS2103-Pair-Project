@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 /**
@@ -32,19 +33,15 @@ public class Fare implements Serializable {
     private BigDecimal fareAmount;
     
     @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private CabinClassConfiguration cabinClassConfig;
-    
-    @ManyToOne(optional = false)
-    private FlightSchedulePlan flightSchedulePlan;
 
     public Fare() {
     }
 
-    public Fare(String fareBasisCode, BigDecimal fareAmount, CabinClassConfiguration cabinClassConfig, FlightSchedulePlan flightSchedulePlan) {
+    public Fare(String fareBasisCode, BigDecimal fareAmount) {
         this.fareBasisCode = fareBasisCode;
         this.fareAmount = fareAmount;
-        this.cabinClassConfig = cabinClassConfig;
-        this.flightSchedulePlan = flightSchedulePlan;
     }
 
     @Override
@@ -104,12 +101,4 @@ public class Fare implements Serializable {
         this.cabinClassConfig = cabinClassConfig;
     }
 
-    public FlightSchedulePlan getFlightSchedulePlan() {
-        return flightSchedulePlan;
-    }
-
-    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
-        this.flightSchedulePlan = flightSchedulePlan;
-    }
-    
 }

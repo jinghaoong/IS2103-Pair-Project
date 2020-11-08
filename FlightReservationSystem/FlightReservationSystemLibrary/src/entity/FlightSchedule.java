@@ -6,13 +6,17 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -31,15 +35,27 @@ public class FlightSchedule implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date dateTime;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2)
     private Integer estimatedFlightDurationHour;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2)
     private Integer estimatedFlightDurationMinute;
     
-    @ManyToOne(optional = true)
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private Flight flight;
+    
+    @OneToMany(mappedBy = "flightSchedule")
+    private List<SeatInventory> seatInventories;
+    
+    @OneToMany(mappedBy = "flightSchedule")
+    private List<FlightReservation> flightReservations;
 
     public FlightSchedule() {
+        this.seatInventories = new ArrayList<>();
     }
 
     public FlightSchedule(Date dateTime, Integer estimatedFlightDurationHour, Integer estimatedFlightDurationMinute) {
@@ -111,6 +127,30 @@ public class FlightSchedule implements Serializable {
 
     public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
         this.flightSchedulePlan = flightSchedulePlan;
+    }
+
+    public Flight getFlight() {
+        return flight;
+    }
+
+    public void setFlight(Flight flight) {
+        this.flight = flight;
+    }
+
+    public List<SeatInventory> getSeatInventories() {
+        return seatInventories;
+    }
+
+    public void setSeatInventories(List<SeatInventory> seatInventories) {
+        this.seatInventories = seatInventories;
+    }
+
+    public List<FlightReservation> getFlightReservations() {
+        return flightReservations;
+    }
+
+    public void setFlightReservations(List<FlightReservation> flightReservations) {
+        this.flightReservations = flightReservations;
     }
 
 }

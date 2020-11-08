@@ -15,6 +15,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import util.enumeration.CabinClass;
@@ -43,6 +44,7 @@ public class CabinClassConfiguration implements Serializable {
     private String seatingConfig; // e.g. 3-4-3, 3-3
     
     @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     AircraftConfiguration aircraftConfig;
     
     @OneToMany(mappedBy = "cabinClassConfig")
