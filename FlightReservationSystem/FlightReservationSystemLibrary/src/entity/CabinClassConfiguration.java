@@ -18,6 +18,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import util.enumeration.CabinClass;
 
 /**
@@ -35,13 +37,15 @@ public class CabinClassConfiguration implements Serializable {
     @Enumerated(EnumType.STRING)
     private CabinClass cabinClass;
     @Column(nullable = false)
+    @Min(value = 0)
+    @Max(value = 2, message = "Maximum number of aisles is 2")
     private Integer numberOfAisles;
     @Column(nullable = false)
     private Integer numberOfRows;
     @Column(nullable = false)
     private Integer numberOfSeatsAbreast;
-    @Column(nullable = false, length = 8)
-    private String seatingConfig; // e.g. 3-4-3, 3-3
+    @Column(nullable = false)
+    private Integer[] seatingConfig; // e.g. 3-4-3, 3-3
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -54,14 +58,13 @@ public class CabinClassConfiguration implements Serializable {
         this.fares = new ArrayList<>();
     }
 
-    public CabinClassConfiguration(CabinClass cabinClass, Integer numberOfAisles, Integer numberOfRows, Integer numberOfSeatsAbreast, String seatingConfig, AircraftConfiguration aircraftConfig) {
+    public CabinClassConfiguration(CabinClass cabinClass, Integer numberOfAisles, Integer numberOfRows, Integer numberOfSeatsAbreast, Integer[] seatingConfig) {
         this();
         this.cabinClass = cabinClass;
         this.numberOfAisles = numberOfAisles;
         this.numberOfRows = numberOfRows;
         this.numberOfSeatsAbreast = numberOfSeatsAbreast;
         this.seatingConfig = seatingConfig;
-        this.aircraftConfig = aircraftConfig;
     }
 
     @Override
@@ -129,11 +132,11 @@ public class CabinClassConfiguration implements Serializable {
         this.numberOfSeatsAbreast = numberOfSeatsAbreast;
     }
 
-    public String getSeatingConfig() {
+    public Integer[] getSeatingConfig() {
         return seatingConfig;
     }
 
-    public void setSeatingConfig(String seatingConfig) {
+    public void setSeatingConfig(Integer[] seatingConfig) {
         this.seatingConfig = seatingConfig;
     }
 

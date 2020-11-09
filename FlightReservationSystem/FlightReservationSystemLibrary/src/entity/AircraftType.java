@@ -40,6 +40,7 @@ public class AircraftType implements Serializable {
     }
 
     public AircraftType(String aircraftTypeName, Integer maximumPassengerCapacity) {
+        this();
         this.aircraftTypeName = aircraftTypeName;
         this.maximumPassengerCapacity = maximumPassengerCapacity;
     }

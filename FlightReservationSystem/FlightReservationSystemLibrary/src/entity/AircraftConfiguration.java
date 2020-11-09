@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  *
@@ -32,6 +34,8 @@ public class AircraftConfiguration implements Serializable {
     @Column(nullable = false, length = 64, unique = true)
     private String aircraftConfigName;
     @Column(nullable = false)
+    @Min(value = 1, message = "Minimum number of Cabin Classes is 1!")
+    @Max(value = 4, message = "Maximum number of Cabin Classes is 4!")
     private Integer numberOfCabinClass;
     @Column(nullable = false)
     private Integer maximumSeatCapacity;
@@ -48,12 +52,11 @@ public class AircraftConfiguration implements Serializable {
         this.cabinClassConfigs = new ArrayList<>();
     }
 
-    public AircraftConfiguration(String aircraftConfigName, Integer numberOfCabinClass, Integer maximumSeatCapacity, List<CabinClassConfiguration> cabinClassConfigs) {
+    public AircraftConfiguration(String aircraftConfigName, Integer numberOfCabinClass, Integer maximumSeatCapacity) {
         this();
         this.aircraftConfigName = aircraftConfigName;
         this.numberOfCabinClass = numberOfCabinClass;
         this.maximumSeatCapacity = maximumSeatCapacity;
-        this.cabinClassConfigs = cabinClassConfigs;
     }
 
     @Override
