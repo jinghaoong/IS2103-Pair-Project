@@ -26,8 +26,6 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
-    @Column(nullable = false, length = 16, unique = true)
-    private String identificationNumber;
     @Column(nullable = false, length = 32)
     private String firstName;
     @Column(nullable = false, length = 32)
@@ -44,13 +42,12 @@ public class Customer implements Serializable {
     private String password;
     
     @OneToMany(mappedBy = "customer")
-    List<FlightReservation> flightReservations;
+    private List<FlightReservation> flightReservations;
 
     public Customer() {
     }
 
-    public Customer(String identificationNumber, String firstName, String lastName, String email, String mobileNumber, String address, String username, String password) {
-        this.identificationNumber = identificationNumber;
+    public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String username, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -91,14 +88,6 @@ public class Customer implements Serializable {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
-    }
-    
-    public String getIdentificationNumber() {
-        return identificationNumber;
-    }
-
-    public void setIdentificationNumber(String identificationNumber) {
-        this.identificationNumber = identificationNumber;
     }
     
     public String getFirstName() {
@@ -155,6 +144,14 @@ public class Customer implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<FlightReservation> getFlightReservations() {
+        return flightReservations;
+    }
+
+    public void setFlightReservations(List<FlightReservation> flightReservations) {
+        this.flightReservations = flightReservations;
     }
     
 }
