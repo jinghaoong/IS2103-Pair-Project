@@ -29,6 +29,9 @@ public class DataInitFRSManagementSessionBean {
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em; 
+
+    public DataInitFRSManagementSessionBean() {
+    }
     
     @PostConstruct
     public void postConstruct() {
@@ -51,7 +54,7 @@ public class DataInitFRSManagementSessionBean {
             em.persist(systemAdmin);
             Employee fleetManager = new Employee("Fleet Manager", "fleetmanager", password, EmployeeRole.FLEET_MANAGER);
             em.persist(fleetManager);
-            Employee routePlanner = new Employee("Route Manager", "routemanager", password, EmployeeRole.ROUTE_PLANNER);
+            Employee routePlanner = new Employee("Route Planner", "routeplanner", password, EmployeeRole.ROUTE_PLANNER);
             em.persist(routePlanner);
             Employee scheduleManager = new Employee("Schedule Manager", "schedulemanager", password, EmployeeRole.SCHEDULE_MANAGER);
             em.persist(scheduleManager);
@@ -68,13 +71,25 @@ public class DataInitFRSManagementSessionBean {
             
             // Airport Creation
             Airport changiAirport = new Airport("Changi International Airport", "SIN", "Singapore", "Singapore", "Singapore", +8);
+            changiAirport.getOriginFlightRoutes().size();
+            changiAirport.getDestinationFlightRoutes().size();
             em.persist(changiAirport);
+            Airport hongKongAirport = new Airport("Hong Kong International Airport", "HKG", "Hong Kong", "Hong Kong", "Hong Kong", +8);
+            hongKongAirport.getOriginFlightRoutes().size();
+            hongKongAirport.getDestinationFlightRoutes().size();
+            em.persist(hongKongAirport);
+            Airport jfkAirport = new Airport("John F. Kennedy International Airport", "JFK", "New York", "New York", "USA", -5);
+            jfkAirport.getOriginFlightRoutes().size();
+            jfkAirport.getDestinationFlightRoutes().size();
+            em.persist(jfkAirport);
             em.flush();
             
             // Aircraft Type Creation    
-            AircraftType boeing737 = new AircraftType("Boeing 737", 204); 
+            AircraftType boeing737 = new AircraftType("Boeing 737", 204);
+            boeing737.getAircraftConfigurations().size();
             em.persist(boeing737);
             AircraftType boeing747 = new AircraftType("Boeing 747", 467);
+            boeing747.getAircraftConfigurations().size();
             em.persist(boeing747);
             em.flush();
         }
