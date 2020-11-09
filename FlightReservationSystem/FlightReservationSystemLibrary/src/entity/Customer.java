@@ -42,7 +42,7 @@ public class Customer implements Serializable {
     private String password;
     
     @OneToMany(mappedBy = "customer")
-    List<FlightReservation> flightReservations;
+    private List<FlightReservation> flightReservations;
 
     public Customer() {
     }
@@ -144,6 +144,14 @@ public class Customer implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<FlightReservation> getFlightReservations() {
+        return flightReservations;
+    }
+
+    public void setFlightReservations(List<FlightReservation> flightReservations) {
+        this.flightReservations = flightReservations;
     }
     
 }
