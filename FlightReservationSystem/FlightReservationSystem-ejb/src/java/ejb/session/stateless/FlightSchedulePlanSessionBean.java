@@ -31,7 +31,6 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         
         singleFlightSchedulePlan.addFlightSchedule(flightSchedule);
         flightSchedule.setFlightSchedulePlan(singleFlightSchedulePlan);
-        singleFlightSchedulePlan.addFare(fare);
         
         em.persist(singleFlightSchedulePlan);
         em.persist(flightSchedule);
