@@ -32,7 +32,7 @@ public interface FlightPlanningSessionBeanRemote {
 
     FlightRoute createFlightRoute(Airport originAirport, Airport destinationAirport) throws FlightRouteAlreadyExistException;
 
-    void setReturnFlightRoute(Long flightRouteId, Long returnFlightRouteId);
+    void updateFlightRoute(FlightRoute flightRoute);
 
     List<FlightRoute> retrieveAllFlightRoutes();
 

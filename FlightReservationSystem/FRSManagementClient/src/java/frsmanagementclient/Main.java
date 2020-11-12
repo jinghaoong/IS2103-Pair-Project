@@ -6,6 +6,7 @@
 package frsmanagementclient;
 
 import ejb.session.stateless.EmployeeSessionBeanRemote;
+import ejb.session.stateless.FlightOperationSessionBeanRemote;
 import ejb.session.stateless.FlightPlanningSessionBeanRemote;
 import javax.ejb.EJB;
 
@@ -19,12 +20,21 @@ public class Main {
     private static EmployeeSessionBeanRemote employeeSessionBeanRemote;
     @EJB
     private static FlightPlanningSessionBeanRemote flightPlanningSessionBeanRemote;
+    @EJB
+    private static FlightOperationSessionBeanRemote flightOperationSessionBeanRemote;
     
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightPlanningSessionBeanRemote);
+        /*
+        if(employeeSessionBeanRemote == null)
+            System.out.println("********** IS NULL");
+        else
+            System.out.println("********** NOT null");
+        */
+        
+        MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightPlanningSessionBeanRemote, flightOperationSessionBeanRemote);
         mainApp.runApp();
     }
     

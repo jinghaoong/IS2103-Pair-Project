@@ -10,6 +10,7 @@ import entity.AircraftType;
 import entity.Airport;
 import entity.CabinClassConfiguration;
 import entity.FlightRoute;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -118,7 +119,6 @@ public class FlightPlanningSessionBean implements FlightPlanningSessionBeanRemot
 
     @Override
     public void updateFlightRoute(FlightRoute flightRoute) {
-        
         em.merge(flightRoute);
     }
 
@@ -127,14 +127,24 @@ public class FlightPlanningSessionBean implements FlightPlanningSessionBeanRemot
         
         Query query = em.createQuery("SELECT fr FROM FlightRoute AS fr");
         List<FlightRoute> flightRoutes = query.getResultList();
+        List<FlightRoute> temp = new ArrayList<>();
         
-        for (FlightRoute fr : flightRoutes) {
+        for (int i = 0; i < flightRoutes.size(); i++) {
+            FlightRoute fr = flightRoutes.get(i);
+            
             if (fr.getReturnFlightRoute() != null) {
                 flightRoutes.remove(fr.getReturnFlightRoute());
             }
         }
         
         flightRoutes.sort((FlightRoute fr1, FlightRoute fr2) -> fr1.getOriginAirport().getAirportName().compareTo(fr2.getOriginAirport().getAirportName()));
+        
+        for (FlightRoute fr : flightRoutes) {
+            fr.getOriginAirport();
+            fr.getDestinationAirport();
+            fr.getFlights().size();
+            fr.getReturnFlightRoute();
+        }
         
         return flightRoutes;
     }
