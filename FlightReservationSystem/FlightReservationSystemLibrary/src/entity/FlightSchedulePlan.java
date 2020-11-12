@@ -112,7 +112,7 @@ public class FlightSchedulePlan implements Serializable {
     public void setFlightScheduleType(FlightScheduleType flightScheduleType) {
         this.flightScheduleType = flightScheduleType;
     }
-
+    
     public Integer getnDay() {
         return nDay;
     }
@@ -156,5 +156,5 @@ public class FlightSchedulePlan implements Serializable {
     public void addFlightSchedule(FlightSchedule flightSchedule) {
         this.flightSchedules.add(flightSchedule);
     }
-    
+
 }
