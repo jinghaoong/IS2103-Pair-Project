@@ -39,6 +39,9 @@ public class FlightSchedulePlan implements Serializable {
     private String flightNumber;
     @Enumerated(EnumType.STRING)
     private FlightScheduleType flightScheduleType;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    private Date startDate;
     @Column(nullable = true)
     private Integer nDay; // for recurrent every n day
     @Column(nullable = true)
@@ -46,6 +49,8 @@ public class FlightSchedulePlan implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(nullable = true)
     private Date endDate;
+    @Column(nullable = false)
+    private Boolean enabled;
     
     @OneToMany(mappedBy = "flightSchedulePlan")
     private List<FlightSchedule> flightSchedules;
@@ -60,6 +65,7 @@ public class FlightSchedulePlan implements Serializable {
 
     public FlightSchedulePlan(String flightNumber, FlightScheduleType flightScheduleType) {
         this();
+        this.enabled = true;
         this.flightNumber = flightNumber;
         this.flightScheduleType = flightScheduleType;
     }
@@ -157,4 +163,20 @@ public class FlightSchedulePlan implements Serializable {
         this.flightSchedules.add(flightSchedule);
     }
 
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = this.flightSchedules.get(0).getDepartureDateTime();
+    }
+    
 }

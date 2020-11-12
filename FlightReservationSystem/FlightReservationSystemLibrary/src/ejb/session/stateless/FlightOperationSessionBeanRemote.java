@@ -11,7 +11,7 @@ import entity.Flight;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import java.util.List;
-import javax.ejb.Local;
+import javax.ejb.Remote;
 import util.exception.FareBasisCodeExistException;
 import util.exception.FlightNumberDoesNotExistException;
 import util.exception.FlightScheduleOverlapException;
@@ -20,8 +20,8 @@ import util.exception.FlightScheduleOverlapException;
  *
  * @author jinghao
  */
-@Local
-public interface FlightOperationSessionBeanLocal {
+@Remote
+public interface FlightOperationSessionBeanRemote {
 
     Flight createFlight(Flight newFlight);
 
@@ -46,5 +46,5 @@ public interface FlightOperationSessionBeanLocal {
     Fare createFare(Fare fare) throws FareBasisCodeExistException;
 
     void updateCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration);
-
+    
 }
