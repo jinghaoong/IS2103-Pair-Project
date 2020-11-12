@@ -31,16 +31,12 @@ public class SeatInventory implements Serializable {
     @Column(nullable = false)
     private Integer reserved;
     
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
-    private FlightSchedule flightSchedule;
-    
     public SeatInventory() {
     }
     
-    public SeatInventory(Integer available, Integer reserved) {
+    public SeatInventory(Integer available) {
         this.available = available;
-        this.reserved = reserved;
+        this.reserved = 0;
     }
     
     public Long getSeatInventoryId() {
@@ -92,12 +88,4 @@ public class SeatInventory implements Serializable {
         this.reserved = reserved;
     }
 
-    public FlightSchedule getFlightSchedule() {
-        return flightSchedule;
-    }
-
-    public void setFlightSchedule(FlightSchedule flightSchedule) {
-        this.flightSchedule = flightSchedule;
-    }
-    
 }

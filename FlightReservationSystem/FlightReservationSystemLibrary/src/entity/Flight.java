@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -30,6 +32,7 @@ public class Flight implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightId;
     @Column(nullable = false, length = 16, unique = true)
+    @Size(min = 3, max = 16, message = "Flight Number has to be between 3 to 16 characters!")
     private String flightNumber;
     @Column(nullable = false)
     private Boolean enabled;
@@ -43,17 +46,19 @@ public class Flight implements Serializable {
     private AircraftConfiguration aircraftConfig;
     
     @OneToOne(optional = true)
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = true)
     private Flight returnFlight;
     
     @OneToMany(mappedBy = "flight")
     private List<FlightSchedule> flightSchedules;
-
+    
     
     public Flight() {
+        this.flightSchedules = new ArrayList<>();
     }
 
     public Flight(String flightNumber) {
+        this();
         this.flightNumber = flightNumber;
         this.enabled = true;
     }

@@ -7,6 +7,7 @@ package entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
@@ -20,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+        
 /**
  *
  * @author jinghao
@@ -34,11 +36,14 @@ public class FlightSchedule implements Serializable {
     private Long flightScheduleId;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Date dateTime;
+    private Date departureDateTime;
     @Column(nullable = false, length = 2)
     private Integer estimatedFlightDurationHour;
     @Column(nullable = false, length = 2)
     private Integer estimatedFlightDurationMinute;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    private Date arrivalDateTime;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -48,7 +53,7 @@ public class FlightSchedule implements Serializable {
     @JoinColumn(nullable = false)
     private Flight flight;
     
-    @OneToMany(mappedBy = "flightSchedule")
+    @OneToMany
     private List<SeatInventory> seatInventories;
     
     @OneToMany(mappedBy = "flightSchedule")
@@ -56,10 +61,12 @@ public class FlightSchedule implements Serializable {
 
     public FlightSchedule() {
         this.seatInventories = new ArrayList<>();
+        this.flightReservations = new ArrayList<>();
     }
 
     public FlightSchedule(Date dateTime, Integer estimatedFlightDurationHour, Integer estimatedFlightDurationMinute) {
-        this.dateTime = dateTime;
+        this();
+        this.departureDateTime = dateTime;
         this.estimatedFlightDurationHour = estimatedFlightDurationHour;
         this.estimatedFlightDurationMinute = estimatedFlightDurationMinute;
     }
@@ -97,12 +104,12 @@ public class FlightSchedule implements Serializable {
         this.flightScheduleId = flightScheduleId;
     }
     
-    public Date getDateTime() {
-        return dateTime;
+    public Date getDepartureDateTime() {
+        return departureDateTime;
     }
 
-    public void setDateTime(Date dateTime) {
-        this.dateTime = dateTime;
+    public void setDepartureDateTime(Date departureDateTime) {
+        this.departureDateTime = departureDateTime;
     }
 
     public Integer getEstimatedFlightDurationHour() {
@@ -153,4 +160,24 @@ public class FlightSchedule implements Serializable {
         this.flightReservations = flightReservations;
     }
 
+    public Date getArrivalDateTime() {
+        return arrivalDateTime;
+    }
+
+    public void setArrivalDateTime(Date arrivalDateTime) {
+        this.arrivalDateTime = arrivalDateTime;
+    }
+    
+    public void computeAndSetArrivalDateTime() {
+        Calendar adt = Calendar.getInstance();
+        adt.setTime(this.arrivalDateTime);
+        
+        Integer timeZoneDifference = flight.getFlightRoute().getOriginAirport().getTimeZone() - flight.getFlightRoute().getDestinationAirport().getTimeZone();
+        Integer adjustedDurationHour = this.estimatedFlightDurationHour + timeZoneDifference;
+        
+        adt.add(Calendar.HOUR, adjustedDurationHour);
+        adt.add(Calendar.MINUTE, this.estimatedFlightDurationMinute);
+        
+        setArrivalDateTime(adt.getTime());
+    }
 }
