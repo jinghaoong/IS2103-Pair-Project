@@ -12,20 +12,16 @@ import entity.CabinClassConfiguration;
 import entity.Employee;
 import entity.Flight;
 import entity.FlightRoute;
-import entity.FlightSchedule;
-import entity.FlightSchedulePlan;
 import entity.Partner;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
+import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.enumeration.CabinClass;
 import static util.enumeration.CabinClass.*;
 import util.enumeration.EmployeeRole;
-import static util.enumeration.FlightScheduleType.*;
 import util.enumeration.PartnerRole;
 
 /**
@@ -34,7 +30,7 @@ import util.enumeration.PartnerRole;
  */
 @Singleton
 @LocalBean
-//@Startup
+@Startup
 public class TestDataInitSessionBean {
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
@@ -64,12 +60,12 @@ public class TestDataInitSessionBean {
             em.persist(scheduleManager);
             Employee salesManager = new Employee("Sales Manager", "salesmanager", password, EmployeeRole.SALES_MANAGER);
             em.persist(salesManager);
-            em.flush();
+            
             
             // Partner
             Partner holidaydotcom = new Partner("Holiday.com", "holidaydotcom", password, PartnerRole.RESERVATION_MANAGER); // unsure
             em.persist(holidaydotcom);
-            em.flush();
+            
             
             // Airport
             Airport changi = new Airport("Changi", "SIN", "Singapore", "Singapore", "Singapore", +8);
@@ -92,165 +88,307 @@ public class TestDataInitSessionBean {
             sydney.getOriginFlightRoutes().size();
             sydney.getDestinationFlightRoutes().size();
             em.persist(sydney);
-            em.flush();
+            
             
             // Aircraft Type
             AircraftType b737 = new AircraftType("Boeing 737", 200);
+            b737.getAircraftConfigurations().size();
             em.persist(b737);
             AircraftType b747 = new AircraftType("Boeing 747", 400);
+            b747.getAircraftConfigurations().size();
             em.persist(b747);
+            
             
             // Aircraft Configuration
             AircraftConfiguration aircraftConfig737ae = new AircraftConfiguration("Boeing 737 All Economy", 1, 180);
+            aircraftConfig737ae.setAircraftType(b737);
+            
             Integer[] arr = {3,3};
             CabinClassConfiguration ccc1 = new CabinClassConfiguration(Y, 1, 30, 6, arr);
+            ccc1.getFares().size();
+            ccc1.setAircraftConfig(aircraftConfig737ae);
             aircraftConfig737ae.getCabinClassConfigs().add(ccc1);
+            
+            em.persist(ccc1);
             em.persist(aircraftConfig737ae);
+            b737.getAircraftConfigurations().add(aircraftConfig737ae);
+            
+            
             AircraftConfiguration aircraftConfig737tc = new AircraftConfiguration("Boeing 737 Three Classes", 3, 180);
+            aircraftConfig737tc.setAircraftType(b737);
+            
             arr = new Integer[] {1,1};
             CabinClassConfiguration ccc2 = new CabinClassConfiguration(CabinClass.F, 1, 5, 2, arr);
+            ccc2.getFares().size();
+            ccc2.setAircraftConfig(aircraftConfig737tc);
             aircraftConfig737tc.getCabinClassConfigs().add(ccc2);
+            
             arr = new Integer[] {2,2};
             CabinClassConfiguration ccc3 = new CabinClassConfiguration(CabinClass.J, 1, 5, 4, arr);
+            ccc3.getFares().size();
+            ccc3.setAircraftConfig(aircraftConfig737tc);
             aircraftConfig737tc.getCabinClassConfigs().add(ccc3);
+            
             arr = new Integer[] {3,3};
             CabinClassConfiguration ccc4 = new CabinClassConfiguration(CabinClass.Y, 1, 25, 6, arr);
+            ccc4.getFares().size();
+            ccc4.setAircraftConfig(aircraftConfig737tc);
             aircraftConfig737tc.getCabinClassConfigs().add(ccc4);
+            
+            em.persist(ccc2);
+            em.persist(ccc3);
+            em.persist(ccc4);
             em.persist(aircraftConfig737tc);
+            b737.getAircraftConfigurations().add(aircraftConfig737tc);
+            
+            
             AircraftConfiguration aircraftConfig747ae = new AircraftConfiguration("Boeing 747 All Economy", 1, 380);
+            aircraftConfig747ae.setAircraftType(b747);
+            
             arr = new Integer[] {3,4,3};
             CabinClassConfiguration ccc5 = new CabinClassConfiguration(CabinClass.Y, 2, 38, 10, arr);
+            ccc5.getFares().size();
+            ccc5.setAircraftConfig(aircraftConfig747ae);
             aircraftConfig747ae.getCabinClassConfigs().add(ccc5);
+            
+            em.persist(ccc5);
             em.persist(aircraftConfig747ae);
+            b747.getAircraftConfigurations().add(aircraftConfig747ae);
+            
+            
             AircraftConfiguration aircraftConfig747tc = new AircraftConfiguration("Boeing 747 Three Classes", 3, 360);
+            aircraftConfig747tc.setAircraftType(b747);
+            
             arr = new Integer[] {1,1};
             CabinClassConfiguration ccc6 = new CabinClassConfiguration(F, 1, 5, 2, arr);
+            ccc6.getFares().size();
+            ccc6.setAircraftConfig(aircraftConfig747tc);
             aircraftConfig747tc.getCabinClassConfigs().add(ccc6);
-            arr = new Integer[] {2,2};
-            CabinClassConfiguration ccc7 = new CabinClassConfiguration(J, 1, 5, 4, arr);
+            
+            arr = new Integer[] {2,2,2};
+            CabinClassConfiguration ccc7 = new CabinClassConfiguration(J, 2, 5, 6, arr);
+            ccc7.getFares().size();
+            ccc7.setAircraftConfig(aircraftConfig747tc);
             aircraftConfig747tc.getCabinClassConfigs().add(ccc7);
-            arr = new Integer[] {3,3};
-            CabinClassConfiguration ccc8 = new CabinClassConfiguration(Y, 1, 25, 6, arr);
+            
+            arr = new Integer[] {3,4,3};
+            CabinClassConfiguration ccc8 = new CabinClassConfiguration(Y, 2, 32, 10, arr);
+            ccc8.getFares().size();
+            ccc8.setAircraftConfig(aircraftConfig747tc);
             aircraftConfig747tc.getCabinClassConfigs().add(ccc8);
+            
+            em.persist(ccc6);
+            em.persist(ccc7);
+            em.persist(ccc8);
             em.persist(aircraftConfig747tc);
-            em.flush();
+            b747.getAircraftConfigurations().add(aircraftConfig747tc);
+            
             
             // Flight Route
             FlightRoute sinHkg = new FlightRoute(changi, hongkong);
-            sinHkg.setReturnFlightRoute(new FlightRoute(hongkong, changi));
+            FlightRoute hkgSin = new FlightRoute(hongkong, changi);
+            sinHkg.setReturnFlightRoute(hkgSin);
+            sinHkg.getFlights().size();
+            hkgSin.getFlights().size();
             em.persist(sinHkg);
+            em.persist(hkgSin);
+            
             FlightRoute sinTpe = new FlightRoute(changi, taoyuan);
-            sinTpe.setReturnFlightRoute(new FlightRoute(taoyuan, changi));
+            FlightRoute tpeSin = new FlightRoute(taoyuan, changi);
+            sinTpe.setReturnFlightRoute(tpeSin);
+            sinTpe.getFlights().size();
+            tpeSin.getFlights().size();
             em.persist(sinTpe);
+            em.persist(tpeSin);
+            
             FlightRoute sinNrt = new FlightRoute(changi, narita);
-            sinNrt.setReturnFlightRoute(new FlightRoute(narita, changi));
+            FlightRoute nrtSin = new FlightRoute(narita, changi);
+            sinNrt.setReturnFlightRoute(nrtSin);
+            sinNrt.getFlights().size();
+            nrtSin.getFlights().size();
             em.persist(sinNrt);
+            em.persist(nrtSin);
+            
             FlightRoute hkgNrt = new FlightRoute(hongkong, narita);
-            hkgNrt.setReturnFlightRoute(new FlightRoute(narita, hongkong));
+            FlightRoute nrtHkg = new FlightRoute(narita, hongkong);
+            hkgNrt.setReturnFlightRoute(nrtHkg);
+            hkgNrt.getFlights().size();
+            nrtHkg.getFlights().size();
             em.persist(hkgNrt);
+            em.persist(nrtHkg);
+            
             FlightRoute tpeNrt = new FlightRoute(taoyuan, narita);
-            tpeNrt.setReturnFlightRoute(new FlightRoute(narita, taoyuan));
+            FlightRoute nrtTpe = new FlightRoute(narita, taoyuan);
+            tpeNrt.setReturnFlightRoute(nrtTpe);
+            tpeNrt.getFlights().size();
+            nrtTpe.getFlights().size();
             em.persist(tpeNrt);
+            em.persist(nrtTpe);
+            
             FlightRoute sinSyd = new FlightRoute(changi, sydney);
-            sinSyd.setReturnFlightRoute(new FlightRoute(sydney, changi));
+            FlightRoute sydSin = new FlightRoute(sydney, changi);
+            sinSyd.setReturnFlightRoute(sydSin);
+            sinSyd.getFlights().size();
+            sydSin.getFlights().size();
             em.persist(sinSyd);
+            em.persist(sydSin);
+            
             FlightRoute sydNrt = new FlightRoute(sydney, narita);
-            sydNrt.setReturnFlightRoute(new FlightRoute(narita, sydney));
+            FlightRoute nrtSyd = new FlightRoute(narita, sydney);
+            sydNrt.setReturnFlightRoute(nrtSyd);
+            sydNrt.getFlights().size();
+            nrtSyd.getFlights().size();
             em.persist(sydNrt);
-            em.flush();
+            em.persist(nrtSyd);
+
             
             // Flights
             Flight ml111 = new Flight("ML111");
-            FlightRoute flightRoute = new FlightRoute(changi, hongkong);
-            ml111.setFlightRoute(flightRoute);
+            ml111.setFlightRoute(sinHkg);
+            sinHkg.getFlights().add(ml111);
             ml111.setAircraftConfig(aircraftConfig737tc);
+            
             Flight ml112 = new Flight("ML112");
-            FlightRoute returnFlightRoute = new FlightRoute(hongkong, changi);
-            ml112.setFlightRoute(returnFlightRoute);
+            ml112.setFlightRoute(hkgSin);
+            hkgSin.getFlights().add(ml112);
             ml112.setAircraftConfig(aircraftConfig737tc);
+            
             ml111.setReturnFlight(ml112);
+            
+            ml111.getFlightSchedules().size();
+            ml112.getFlightSchedules().size();
             em.persist(ml111);
             em.persist(ml112);
+            
+            
+            
+            
             Flight ml211 = new Flight("ML211");
-            flightRoute = new FlightRoute(changi, taoyuan);
-            ml211.setFlightRoute(flightRoute);
+            ml211.setFlightRoute(sinTpe);
+            sinTpe.getFlights().add(ml211);
             ml211.setAircraftConfig(aircraftConfig737tc);
+            
             Flight ml212 = new Flight("ML212");
-            returnFlightRoute = new FlightRoute(taoyuan, changi);
-            ml212.setFlightRoute(returnFlightRoute);
+            ml212.setFlightRoute(tpeSin);
+            tpeSin.getFlights().add(ml212);
             ml212.setAircraftConfig(aircraftConfig737tc);
+            
             ml211.setReturnFlight(ml212);
+            
+            ml211.getFlightSchedules().size();
+            ml212.getFlightSchedules().size();
             em.persist(ml211);
             em.persist(ml212);
+            
+            
             Flight ml311 = new Flight("ML311");
-            flightRoute = new FlightRoute(changi, narita);
-            ml311.setFlightRoute(flightRoute);
+            ml311.setFlightRoute(sinNrt);
+            sinNrt.getFlights().add(ml311);
             ml311.setAircraftConfig(aircraftConfig747tc);
+            
             Flight ml312 = new Flight("ML312");
-            returnFlightRoute = new FlightRoute(narita, changi);
-            ml312.setFlightRoute(returnFlightRoute);
+            ml312.setFlightRoute(nrtSin);
+            nrtSin.getFlights().add(ml312);
             ml312.setAircraftConfig(aircraftConfig747tc);
+            
             ml311.setReturnFlight(ml312);
+            
+            ml311.getFlightSchedules().size();
+            ml312.getFlightSchedules().size();
             em.persist(ml311);
             em.persist(ml312);
+            
+            
             Flight ml411 = new Flight("ML411");
-            flightRoute = new FlightRoute(hongkong, narita);
-            ml411.setFlightRoute(flightRoute);
+            ml411.setFlightRoute(hkgNrt);
+            hkgNrt.getFlights().add(ml411);
             ml411.setAircraftConfig(aircraftConfig737tc);
+            
             Flight ml412 = new Flight("ML412");
-            returnFlightRoute = new FlightRoute(narita, hongkong);
-            ml412.setFlightRoute(returnFlightRoute);
+            ml412.setFlightRoute(nrtHkg);
+            nrtHkg.getFlights().add(ml412);
             ml412.setAircraftConfig(aircraftConfig737tc);
+            
             ml411.setReturnFlight(ml412);
+            
+            ml411.getFlightSchedules().size();
+            ml412.getFlightSchedules().size();
             em.persist(ml411);
             em.persist(ml412);
             
+            
             Flight ml511 = new Flight("ML511");
-            flightRoute = new FlightRoute(taoyuan, narita);
-            ml511.setFlightRoute(flightRoute);
+            ml511.setFlightRoute(tpeNrt);
+            tpeNrt.getFlights().add(ml511);
             ml511.setAircraftConfig(aircraftConfig737tc);
+            
             Flight ml512 = new Flight("ML512");
-            returnFlightRoute = new FlightRoute(narita, taoyuan);
-            ml512.setFlightRoute(returnFlightRoute);
+            ml512.setFlightRoute(nrtTpe);
+            nrtTpe.getFlights().add(ml512);
             ml512.setAircraftConfig(aircraftConfig737tc);
+            
             ml511.setReturnFlight(ml512);
+            
+            ml511.getFlightSchedules().size();
+            ml512.getFlightSchedules().size();
             em.persist(ml511);
             em.persist(ml512);
             
+            
             Flight ml611 = new Flight("ML611");
-            flightRoute = new FlightRoute(changi, sydney);
-            ml611.setFlightRoute(flightRoute);
+            ml611.setFlightRoute(sinSyd);
+            sinSyd.getFlights().add(ml611);
             ml611.setAircraftConfig(aircraftConfig737tc);
+            
             Flight ml612 = new Flight("ML612");
-            returnFlightRoute = new FlightRoute(hongkong, sydney);
-            ml612.setFlightRoute(returnFlightRoute);
+            ml612.setFlightRoute(sydSin);
+            sydSin.getFlights().add(ml612);
             ml612.setAircraftConfig(aircraftConfig737tc);
+            
             ml611.setReturnFlight(ml612);
+            
+            ml611.getFlightSchedules().size();
+            ml612.getFlightSchedules().size();
             em.persist(ml611);
             em.persist(ml612);
+            
+            
             Flight ml621 = new Flight("ML621");
-            flightRoute = new FlightRoute(changi, sydney);
-            ml621.setFlightRoute(flightRoute);
+            ml621.setFlightRoute(sinSyd);
+            sinSyd.getFlights().add(ml621);
             ml621.setAircraftConfig(aircraftConfig737ae);
+            
             Flight ml622 = new Flight("ML622");
-            returnFlightRoute = new FlightRoute(hongkong, sydney);
-            ml622.setFlightRoute(returnFlightRoute);
+            ml622.setFlightRoute(sydSin);
+            sydSin.getFlights().add(ml622);
             ml622.setAircraftConfig(aircraftConfig737ae);
+            
             ml621.setReturnFlight(ml622);
+            
+            ml621.getFlightSchedules().size();
+            ml622.getFlightSchedules().size();
             em.persist(ml621);
             em.persist(ml622);
+            
+            
             Flight ml711 = new Flight("ML711");
-            flightRoute = new FlightRoute(sydney, narita);
-            ml711.setFlightRoute(flightRoute);
+            ml711.setFlightRoute(sydNrt);
+            sydNrt.getFlights().add(ml711);
             ml711.setAircraftConfig(aircraftConfig747tc);
+            
             Flight ml712 = new Flight("ML712");
-            returnFlightRoute = new FlightRoute(narita, sydney);
-            ml712.setFlightRoute(returnFlightRoute);
+            ml712.setFlightRoute(nrtSyd);
+            nrtSyd.getFlights().add(ml712);
             ml712.setAircraftConfig(aircraftConfig747tc);
+            
             ml711.setReturnFlight(ml712);
+            
+            ml711.getFlightSchedules().size();
+            ml712.getFlightSchedules().size();
             em.persist(ml711);
             em.persist(ml712);
             
+            /*
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             // FlightSchedulePlan
@@ -273,10 +411,8 @@ public class TestDataInitSessionBean {
             flightSchedule = new FlightSchedule(date, 14, 0);
             flightSchedulePlan.getFlightSchedules().add(flightSchedule);
             
-            
-            
-            
             flightSchedulePlan.getFlightSchedules().add(flightSchedule);
+            */
             
             
 //ML711, Recurrent Weekly
@@ -291,13 +427,6 @@ public class TestDataInitSessionBean {
 //	Y, Y001, $1500
 //	Y, Y002, $1000
 
-            
-
-
-
-            
-            
-            
         } catch (Exception e) {
             System.out.println(e);
         }
