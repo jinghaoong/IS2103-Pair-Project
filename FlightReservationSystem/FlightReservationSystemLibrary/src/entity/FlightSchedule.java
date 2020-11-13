@@ -64,9 +64,9 @@ public class FlightSchedule implements Serializable {
         this.flightReservations = new ArrayList<>();
     }
 
-    public FlightSchedule(Date dateTime, Integer estimatedFlightDurationHour, Integer estimatedFlightDurationMinute) {
+    public FlightSchedule(Date departureDateTime, Integer estimatedFlightDurationHour, Integer estimatedFlightDurationMinute) {
         this();
-        this.departureDateTime = dateTime;
+        this.departureDateTime = departureDateTime;
         this.estimatedFlightDurationHour = estimatedFlightDurationHour;
         this.estimatedFlightDurationMinute = estimatedFlightDurationMinute;
     }
@@ -170,9 +170,9 @@ public class FlightSchedule implements Serializable {
     
     public void computeAndSetArrivalDateTime() {
         Calendar adt = Calendar.getInstance();
-        adt.setTime(this.arrivalDateTime);
+        adt.setTime(this.departureDateTime);
         
-        Integer timeZoneDifference = flight.getFlightRoute().getOriginAirport().getTimeZone() - flight.getFlightRoute().getDestinationAirport().getTimeZone();
+        Integer timeZoneDifference = this.flight.getFlightRoute().getOriginAirport().getTimeZone() - this.flight.getFlightRoute().getDestinationAirport().getTimeZone();
         Integer adjustedDurationHour = this.estimatedFlightDurationHour + timeZoneDifference;
         
         adt.add(Calendar.HOUR, adjustedDurationHour);
