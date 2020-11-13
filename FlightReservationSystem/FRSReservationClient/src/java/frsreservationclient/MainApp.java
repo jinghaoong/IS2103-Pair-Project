@@ -12,11 +12,15 @@ import entity.FlightReservation;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import util.exception.DataInputException;
+import util.exception.EmailAlreadyInUseException;
 import util.exception.InvalidCredentialsException;
+import util.exception.MobileNumberAlreadyInUseException;
+import util.exception.NoFlightReservationsMadeException;
 import util.exception.UsernameAlreadyTakenException;
 
 /**
@@ -33,7 +37,7 @@ public class MainApp {
         this.customerSessionBeanRemote = customerSessionBeanRemote;
     }
     
-    public void runApp() throws UsernameAlreadyTakenException, InvalidCredentialsException {
+    public void runApp() throws UsernameAlreadyTakenException, InvalidCredentialsException, EmailAlreadyInUseException, MobileNumberAlreadyInUseException, NoFlightReservationsMadeException {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
         
@@ -55,7 +59,7 @@ public class MainApp {
                     doCustomerLogin();
                 } else if(response == 3) {
                     // searchFlight();
-                    System.out.println("searchFlight not done yet rip");
+                    System.out.println("searchFlight to be completed by Sunday\n");
                 } else if (response == 4) {
                     break;
                 } else {
@@ -68,43 +72,44 @@ public class MainApp {
         }
     }
     
-    public void registerAsCustomer() throws UsernameAlreadyTakenException {
+    public void registerAsCustomer() throws UsernameAlreadyTakenException, EmailAlreadyInUseException, MobileNumberAlreadyInUseException {
         
         Scanner sc = new Scanner(System.in);
         System.out.println("*** Register as Customer ***\n");
         Customer newCustomer = new Customer();
-        System.out.println("Enter First Name: ");
+        System.out.print("Enter First Name: ");
         newCustomer.setFirstName(sc.nextLine().trim());
-        System.out.println("Enter Last Name: ");
+        System.out.print("Enter Last Name: ");
         newCustomer.setLastName(sc.nextLine().trim());
-        System.out.println("Enter Email: ");
+        System.out.print("Enter Email: ");
         newCustomer.setEmail(sc.nextLine().trim());
-        System.out.println("Enter Mobile Phone Number: ");
+        System.out.print("Enter Mobile Phone Number: ");
         newCustomer.setMobileNumber(sc.nextLine().trim());
-        System.out.println("Enter Address: ");
+        System.out.print("Enter Address: ");
         newCustomer.setAddress(sc.nextLine().trim());
-        System.out.println("Enter Username: ");
+        System.out.print("Enter Username: ");
         newCustomer.setUsername(sc.nextLine().trim());
-        System.out.println("Enter Password: ");
+        System.out.print("Enter Password: ");
         newCustomer.setPassword(sc.nextLine().trim());
         
+        Long newCustomerId = 0l;
         try {
-            Long newCustomerId = customerSessionBeanRemote.createCustomer(newCustomer);
-        } catch (UsernameAlreadyTakenException ex) {
-            System.out.println("This Username is already taken, please try another!");
+            newCustomerId = customerSessionBeanRemote.createCustomer(newCustomer);
+            System.out.println("New customer " + newCustomer.getUsername() + " created! Customer ID number: " + newCustomerId);
+            System.out.println();
+        } catch (UsernameAlreadyTakenException | EmailAlreadyInUseException | MobileNumberAlreadyInUseException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println();
         }
-        
-        System.out.println("New customer " + newCustomer.getUsername() + " created! Customer ID number: " + newCustomer.getCustomerId());
-        System.out.println();
     }
     
-    public void doCustomerLogin() throws InvalidCredentialsException {
+    public void doCustomerLogin() throws InvalidCredentialsException, NoFlightReservationsMadeException {
         
         Scanner sc = new Scanner(System.in);
         System.out.println("*** Login as Customer ***\n");
-        System.out.println("Username: ");
+        System.out.print("Username: ");
         String username = sc.nextLine().trim();
-        System.out.println("Password: ");
+        System.out.print("Password: ");
         String password = sc.nextLine().trim();
         System.out.println();
         
@@ -162,7 +167,7 @@ public class MainApp {
 //        
 //    }
     
-    public void postLogin() {
+    public void postLogin() throws NoFlightReservationsMadeException {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** You have successfully logged in! ***\n");
         Integer response = 0;
@@ -184,7 +189,7 @@ public class MainApp {
                 } else if(response == 2) {
                     viewFlightReservations();
                 } else if(response == 3) {
-                    viewFlightReservationDetail();
+                    // viewFlightReservationDetail();
                 } else if (response == 4) {
                     break;
                 } else {
@@ -205,65 +210,69 @@ public class MainApp {
         
     }
     
-    public void viewFlightReservations() {
+    public void viewFlightReservations() throws NoFlightReservationsMadeException {
+        System.out.println("*** View Flight Reservations ***\n");
         
         List<FlightReservation> listOfFlightReservations = customerSessionBeanRemote
                 .retrieveFlightReservations(loggedInCustomer.getCustomerId());
-        System.out.println("Departure Date  /   Departure Time  /   Departure Airport   /   ");
-        for (FlightReservation fr : listOfFlightReservations) {
+        
+        if (listOfFlightReservations.isEmpty()) {
             
+        }
+        for (FlightReservation fr : listOfFlightReservations) {
+            System.out.println();
         }
     }
     
-    public void viewFlightReservationDetail() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Which reservation would you like to view? (0 to go to next reservation, 1 to view)");
-        Integer response = 2;
-        FlightReservation flightReservation = new FlightReservation();
-        String departureDate = "09112020"; // stub
-        String departureTime = "2300"; // stub
-        String departureAirport = "SGP"; // stub
-        String destinationAirport = "TKY"; // stub
-        int numOfPassengers = 0; // stub
-        List<FlightReservation> listOfFlightReservations = customerSessionBeanRemote
-                .retrieveFlightReservations(loggedInCustomer.getCustomerId());
-        int numOfReservations = listOfFlightReservations.size();
-        for (int i = 0; i < numOfReservations; i++) {
-            flightReservation = listOfFlightReservations.get(i);
-            departureDate = "09112020"; // stub
-            departureTime = "2300"; // stub
-            departureAirport = "SGP"; // stub
-            destinationAirport = "TKY"; // stub
-            numOfPassengers = 0; // stub
-            System.out.print("" + departureDate + "   " + departureTime + "   " + departureAirport + " - " + destinationAirport 
-                    + ", " + numOfPassengers + " Passenger(s): ");
-            response = sc.nextInt();
-            if (response == 1) {
-                break;
-            }
-        }
-        System.out.println();
-        
-        FlightSchedule flightSchedule = flightReservation.getFlightSchedule();
-        Flight flight = flightSchedule.getFlight();
-        FlightRoute flightRoute = flight.getFlightRoute();
-        
-        
-        
-        System.out.println("*** Flight Reservation Details *** \n");
-        // for every flight
-        System.out.println("Departure: " + departureDate + "   " + departureDate + "   " + departureTime + " timezone");
-        System.out.println("  Arrival: " + departureDate + "   " + departureDate + "   " + departureTime + " timezone\n");
-        
-        // for every passenger
-        System.out.println("Passengers:");
-        System.out.println("First Name " + "Last Name" + "   " + "Passport Number");
-            // for every flight
-            System.out.println("departureAirport - arrivalAirport : Cabin class, seatnumber");
-        
-        
-        System.out.println("totalAmountPaid"); // input money
-    }
+//    public void viewFlightReservationDetail() {
+//        Scanner sc = new Scanner(System.in);
+//        System.out.println("Which reservation would you like to view? (0 to go to next reservation, 1 to view)");
+//        Integer response = 2;
+//        FlightReservation flightReservation = new FlightReservation();
+//        String departureDate = "09112020"; // stub
+//        String departureTime = "2300"; // stub
+//        String departureAirport = "SGP"; // stub
+//        String destinationAirport = "TKY"; // stub
+//        int numOfPassengers = 0; // stub
+//        List<FlightReservation> listOfFlightReservations = customerSessionBeanRemote
+//                .retrieveFlightReservations(loggedInCustomer.getCustomerId());
+//        int numOfReservations = listOfFlightReservations.size();
+//        for (int i = 0; i < numOfReservations; i++) {
+//            flightReservation = listOfFlightReservations.get(i);
+//            departureDate = "09112020"; // stub
+//            departureTime = "2300"; // stub
+//            departureAirport = "SGP"; // stub
+//            destinationAirport = "TKY"; // stub
+//            numOfPassengers = 0; // stub
+//            System.out.print("" + departureDate + "   " + departureTime + "   " + departureAirport + " - " + destinationAirport 
+//                    + ", " + numOfPassengers + " Passenger(s): ");
+//            response = sc.nextInt();
+//            if (response == 1) {
+//                break;
+//            }
+//        }
+//        System.out.println();
+//        
+//        FlightSchedule flightSchedule = flightReservation.getFlightSchedule();
+//        Flight flight = flightSchedule.getFlight();
+//        FlightRoute flightRoute = flight.getFlightRoute();
+//        
+//        
+//        
+//        System.out.println("*** Flight Reservation Details *** \n");
+//        // for every flight
+//        System.out.println("Departure: " + departureDate + "   " + departureDate + "   " + departureTime + " timezone");
+//        System.out.println("  Arrival: " + departureDate + "   " + departureDate + "   " + departureTime + " timezone\n");
+//        
+//        // for every passenger
+//        System.out.println("Passengers:");
+//        System.out.println("First Name " + "Last Name" + "   " + "Passport Number");
+//            // for every flight
+//            System.out.println("departureAirport - arrivalAirport : Cabin class, seatnumber");
+//        
+//        
+//        System.out.println("totalAmountPaid"); // input money
+//    }
     
     public void doLogout() {
         loggedInCustomer = null;
