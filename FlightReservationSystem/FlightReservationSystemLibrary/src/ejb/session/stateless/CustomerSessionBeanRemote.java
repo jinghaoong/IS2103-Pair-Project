@@ -12,6 +12,7 @@ import javax.ejb.Remote;
 import util.exception.EmailAlreadyInUseException;
 import util.exception.InvalidCredentialsException;
 import util.exception.MobileNumberAlreadyInUseException;
+import util.exception.NoFlightReservationsMadeException;
 import util.exception.UsernameAlreadyTakenException;
 
 /**
@@ -25,6 +26,6 @@ public interface CustomerSessionBeanRemote {
 
     public Customer login(String username, String password) throws InvalidCredentialsException;
 
-    public List<FlightReservation> retrieveFlightReservations(Long customerId);
+    public List<FlightReservation> retrieveFlightReservations(Long customerId) throws NoFlightReservationsMadeException;
     
 }
