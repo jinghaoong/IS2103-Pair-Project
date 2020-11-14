@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -52,21 +53,21 @@ public class FlightSchedulePlan implements Serializable {
     @Column(nullable = false)
     private Boolean enabled;
     
-    @OneToMany(mappedBy = "flightSchedulePlan")
+    @OneToMany(mappedBy = "flightSchedulePlan", cascade = CascadeType.ALL)
     private List<FlightSchedule> flightSchedules;
     
-    @OneToMany(mappedBy = "flightSchedulePlan")
+    @OneToMany(mappedBy = "flightSchedulePlan", cascade = CascadeType.ALL)
     private List<Fare> fares;
     
     @OneToOne(optional = true)
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = true)
     private FlightSchedulePlan returnFlightSchedulePlan;
     
     public FlightSchedulePlan() {
         this.flightSchedules = new ArrayList<>();
         this.fares = new ArrayList<>();
     }
-
+    
     public FlightSchedulePlan(String flightNumber, FlightScheduleType flightScheduleType) {
         this();
         this.enabled = true;
@@ -179,7 +180,7 @@ public class FlightSchedulePlan implements Serializable {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate() {
         this.startDate = this.flightSchedules.get(0).getDepartureDateTime();
     }
 

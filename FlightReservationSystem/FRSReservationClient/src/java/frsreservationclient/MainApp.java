@@ -11,12 +11,11 @@ import entity.Flight;
 import entity.FlightReservation;
 import entity.FlightRoute;
 import entity.FlightSchedule;
-import entity.FlightSchedulePlan;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import util.exception.DataInputException;
+import util.exception.EmailAlreadyInUseException;
 import util.exception.InvalidCredentialsException;
+import util.exception.MobileNumberAlreadyInUseException;
 import util.exception.UsernameAlreadyTakenException;
 
 /**
@@ -90,7 +89,7 @@ public class MainApp {
         
         try {
             Long newCustomerId = customerSessionBeanRemote.createCustomer(newCustomer);
-        } catch (UsernameAlreadyTakenException ex) {
+        } catch (UsernameAlreadyTakenException | EmailAlreadyInUseException | MobileNumberAlreadyInUseException ex) {
             System.out.println("This Username is already taken, please try another!");
         }
         

@@ -24,7 +24,7 @@ import util.enumeration.PartnerRole;
  */
 @Singleton
 @LocalBean
-@Startup
+//@Startup
 public class DataInitFRSManagementSessionBean {
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")

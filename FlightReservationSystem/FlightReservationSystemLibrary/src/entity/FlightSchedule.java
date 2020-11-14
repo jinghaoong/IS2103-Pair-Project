@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -45,7 +46,7 @@ public class FlightSchedule implements Serializable {
     @Column(nullable = false)
     private Date arrivalDateTime;
     
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
     
@@ -53,10 +54,10 @@ public class FlightSchedule implements Serializable {
     @JoinColumn(nullable = false)
     private Flight flight;
     
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<SeatInventory> seatInventories;
     
-    @OneToMany(mappedBy = "flightSchedule")
+    @OneToMany(mappedBy = "flightSchedule",cascade = CascadeType.ALL)
     private List<FlightReservation> flightReservations;
 
     public FlightSchedule() {

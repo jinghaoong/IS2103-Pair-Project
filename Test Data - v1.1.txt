@@ -1,0 +1,189 @@
+*IMPORTANT NOTES*
+=================
+
+Do *NOT* preload any other test data other than those specified above.
+
+You should use a different singleton session bean to load this set of test data for exercising the actual test cases to be given to you on Friday. Just comment/uncomment the @Startup annotation to activate your own development data and the test data.
+
+
+
+==========================================================================================================================================================================================================================================================
+==========================================================================================================================================================================================================================================================
+==========================================================================================================================================================================================================================================================
+
+
+
+Employee
+========
+
+EmployeeName, Username/Email (either one is acceptable), Password, Role
+-----------------------------------------------------------------------
+Fleet Manager, fleetmanager/fleetmanager@mlair.com.sg, password, Fleet Manager
+Route Planner, routeplanner/routeplanner@mlair.com.sg, password, Route Planner
+Schedule Manager, schedulemanager/schedulemanager@mlair.com.sg, password, Schedule Manager
+Sales Manager, salesmanager/salesmanager@mlair.com.sg, password, Sales Manager
+
+Partner
+=======
+
+PartnerName, Username/Email (either one is acceptable), Password
+----------------------------------------------------------------
+Holiday.com, holidaydotcom/mlair@holiday.com, password
+
+Airport
+=======
+
+AirportName, IATACode, City, State/Province, Country, Timezone
+--------------------------------------------------------------
+Changi, SIN, Singapore, Singapore, Singapore, +8
+Hong Kong, HKG, Chek Lap Kok, Hong Kong, China, +8
+Taoyuan, TPE, Taoyuan, Taipei, Taiwan R.O.C., +8
+Narita, NRT, Narita, Chiba, Japan, +9
+Sydney, SYD, Sydney, New South Wales, Australia, +11
+
+Aircraft Type
+=============
+
+AircraftTypeName, MaximumCapacity
+---------------------------------
+Boeing 737, 200
+Boeing 747, 400
+
+Aircraft Configuration [Cabin Class Configuration]
+==================================================
+
+Name, NumberOfCabinClass, MaximumCapacity [CabinClass, NumberOfAisle, NumberOfRow, NumberOfSeatAbreast, SeatConfiguration, MaxCapacity]
+---------------------------------------------------------------------------------------------------------------------------------------
+Boeing 737 All Economy, 1, 180
+	Y, 1, 30, 6, 3-3, 180
+Boeing 737 Three Classes, 3, 180
+	F, 1, 5, 2, 1-1, 10
+	J, 1, 5, 4, 2-2, 20
+	Y, 1, 25, 6, 3-3, 150
+Boeing 747 All Economy, 1, 380
+	Y, 2, 38, 10, 3-4-3, 380
+Boeing 747 Three Classes, 3, 360
+	F, 1, 5, 2, 1-1, 10
+	J, 2, 5, 6, 2-2-2, 30
+	Y, 2, 32, 10, 3-4-3, 320
+
+Flight Route [Complementary Return Route]
+=========================================
+
+Origin, Destination [Destination, Origin]
+-----------------------------------------
+SIN, HKG
+	HKG, SIN
+SIN, TPE
+	TPE, SIN
+SIN, NRT
+	NRT, SIN
+HKG, NRT
+	NRT, HKG
+TPE, NRT
+	NRT, TPE
+SIN, SYD
+	SYD, SIN
+SYD, NRT
+	NRT, SYD
+
+Flight [Complementary Return Flight]
+====================================
+
+FlightNumber, Origin, Destination, Aircraft Configuration [FlightNumber, Origin, Destination, Aircraft Configuration]
+---------------------------------------------------------------------------------------------------------------------
+ML111, SIN, HKG, Boeing 737 Three Classes
+	ML112, HKG, SIN, Boeing 737 Three Classes
+ML211, SIN, TPE, Boeing 737 Three Classes
+	ML212, TPE, SIN, Boeing 737 Three Classes
+ML311, SIN, NRT, Boeing 747 Three Classes
+	ML312, NRT, SIN, Boeing 747 Three Classes
+ML411, HKG, NRT, Boeing 737 Three Classes
+	ML412, NRT, HKG, Boeing 737 Three Classes
+ML511, TPE, NRT, Boeing 737 Three Classes
+	ML512, NRT, TPE, Boeing 737 Three Classes
+ML611, SIN, SYD, Boeing 737 Three Classes
+	ML612, SYD, SIN, Boeing 737 Three Classes
+ML621, SIN, SYD, Boeing 737 All Economy
+	ML622, SYD, SIN, Boeing 737 All Economy
+ML711, SYD, NRT, Boeing 747 Three Classes
+	ML712, NRT, SYD, Boeing 747 Three Classes
+
+Flight Schedule Plan [Flight Schedule] [Fare] [[Complementary Return Flight Schedule Plan]]
+===========================================================================================
+
+FlightNumber, FlightSchedulePlanType [Day of Week, DepartureTime, Start Date, End Date, FlightDuration | NDay, DepartureTime, Start Date, End Date, FlightDuration | DepartureDate, DepartureTime, FlightDuration] [CabinClass, FareBasisCode, FareAmount] [[LayoverDuration]]
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ML711, Recurrent Weekly
+	
+	Monday, 9:00 AM, 1 Dec 20, 31 Dec 20, 14 Hours 0 Minute
+		ML712 Layover for 2 Hours
+	
+	F, F001, $6500
+	F, F002, $6000
+	J, J001, $3500
+	J, J002, $3000
+	Y, Y001, $1500
+	Y, Y002, $1000
+
+ML611, Recurrent Weekly
+	
+	Sunday, 12:00 PM, 1 Dec 20, 31 Dec 20, 8 Hours 0 Minute
+		ML612 Layover for 2 Hours
+	
+	F, F001, $3250
+	F, F002, $3000
+	J, J001, $1750
+	J, J002, $1500
+	Y, Y001, $750
+	Y, Y002, $500
+
+ML621, Recurrent Weekly
+	
+	Tuesday, 10:00 AM, 1 Dec 20, 31 Dec 20, 8 Hours 0 Minute
+		ML622 Layover for 2 Hours
+		
+	Y, Y001, $700
+	Y, Y002, $400
+
+ML311, Recurrent Weekly
+
+	Monday, 10:00 AM, 1 Dec 20, 31 Dec 20, 6 Hours 30 Minute
+		ML312 Layover for 3 Hours
+	
+	F, F001, $3350
+	F, F002, $3100
+	J, J001, $1850
+	J, J002, $1600
+	Y, Y001, $850
+	Y, Y002, $600
+
+ML411, Recurrent NDay
+	
+	2, 1:00 PM, 1 Dec 20, 31 Dec 20, 4 Hours 0 Minute
+		ML412 Layover for 4 Hours
+	
+	F, F001, $3150
+	F, F002, $2900
+	J, J001, $1650
+	J, J002, $1400
+	Y, Y001, $650
+	Y, Y002, $400
+
+ML511, Manual Multiple
+	
+	7 Dec 20, 5:00 PM, 3 Hours 0 Minute
+	8 Dec 20, 5:00 PM, 3 Hours 0 Minute
+	9 Dec 20, 5:00 PM, 3 Hours 0 Minute
+		ML512 Layover for 2 Hours
+	
+	F, F001, $3100
+	F, F002, $2850
+	J, J001, $1600
+	J, J002, $1350
+	Y, Y001, $600
+	Y, Y002, $350
+
+==========================================================================================================================================================================================================================================================
+==========================================================================================================================================================================================================================================================
+==========================================================================================================================================================================================================================================================

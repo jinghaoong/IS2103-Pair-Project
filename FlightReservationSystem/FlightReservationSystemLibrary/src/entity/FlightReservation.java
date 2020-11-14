@@ -37,6 +37,10 @@ public class FlightReservation implements Serializable {
     @JoinColumn(nullable = false)
     private FlightSchedule flightSchedule;
     
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private CabinClassConfiguration cabinClassConfig;
+    
     public FlightReservation() {
     }
 
@@ -102,6 +106,14 @@ public class FlightReservation implements Serializable {
 
     public void setFlightSchedule(FlightSchedule flightSchedule) {
         this.flightSchedule = flightSchedule;
+    }
+
+    public CabinClassConfiguration getCabinClassConfig() {
+        return cabinClassConfig;
+    }
+
+    public void setCabinClassConfig(CabinClassConfiguration cabinClassConfig) {
+        this.cabinClassConfig = cabinClassConfig;
     }
     
 }

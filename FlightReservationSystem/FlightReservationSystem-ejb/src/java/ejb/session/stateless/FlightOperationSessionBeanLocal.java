@@ -8,11 +8,13 @@ package ejb.session.stateless;
 import entity.CabinClassConfiguration;
 import entity.Fare;
 import entity.Flight;
+import entity.FlightReservation;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.FareBasisCodeExistException;
+import util.exception.FlightAlreadyExistException;
 import util.exception.FlightNumberDoesNotExistException;
 import util.exception.FlightScheduleOverlapException;
 
@@ -23,9 +25,11 @@ import util.exception.FlightScheduleOverlapException;
 @Local
 public interface FlightOperationSessionBeanLocal {
 
-    Flight createFlight(Flight newFlight);
+    Flight createFlight(Flight newFlight) throws FlightAlreadyExistException;
 
     void updateFlight(Flight flight);
+    
+    void updateReturnAndFlight(Flight flight);
 
     List<Flight> retrieveAllFlights();
 
@@ -46,5 +50,9 @@ public interface FlightOperationSessionBeanLocal {
     Fare createFare(Fare fare) throws FareBasisCodeExistException;
 
     void updateCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration);
+
+    List<FlightSchedulePlan> retrieveAllFlightSchedulePlans();
+
+    List<FlightReservation> retrieveFlightReservationsByCabinClass(CabinClassConfiguration cabinClass);
 
 }

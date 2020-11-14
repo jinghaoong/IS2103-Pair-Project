@@ -105,7 +105,7 @@ public class TestDataInitSessionBean {
             
             Integer[] arr = {3,3};
             CabinClassConfiguration ccc1 = new CabinClassConfiguration(Y, 1, 30, 6, arr);
-            ccc1.getFares().size();
+            //ccc1.getFares().size();
             ccc1.setAircraftConfig(aircraftConfig737ae);
             aircraftConfig737ae.getCabinClassConfigs().add(ccc1);
             
@@ -119,19 +119,19 @@ public class TestDataInitSessionBean {
             
             arr = new Integer[] {1,1};
             CabinClassConfiguration ccc2 = new CabinClassConfiguration(CabinClass.F, 1, 5, 2, arr);
-            ccc2.getFares().size();
+            //ccc2.getFares().size();
             ccc2.setAircraftConfig(aircraftConfig737tc);
             aircraftConfig737tc.getCabinClassConfigs().add(ccc2);
             
             arr = new Integer[] {2,2};
             CabinClassConfiguration ccc3 = new CabinClassConfiguration(CabinClass.J, 1, 5, 4, arr);
-            ccc3.getFares().size();
+            //ccc3.getFares().size();
             ccc3.setAircraftConfig(aircraftConfig737tc);
             aircraftConfig737tc.getCabinClassConfigs().add(ccc3);
             
             arr = new Integer[] {3,3};
             CabinClassConfiguration ccc4 = new CabinClassConfiguration(CabinClass.Y, 1, 25, 6, arr);
-            ccc4.getFares().size();
+            //ccc4.getFares().size();
             ccc4.setAircraftConfig(aircraftConfig737tc);
             aircraftConfig737tc.getCabinClassConfigs().add(ccc4);
             
@@ -147,7 +147,7 @@ public class TestDataInitSessionBean {
             
             arr = new Integer[] {3,4,3};
             CabinClassConfiguration ccc5 = new CabinClassConfiguration(CabinClass.Y, 2, 38, 10, arr);
-            ccc5.getFares().size();
+            //ccc5.getFares().size();
             ccc5.setAircraftConfig(aircraftConfig747ae);
             aircraftConfig747ae.getCabinClassConfigs().add(ccc5);
             
@@ -161,19 +161,19 @@ public class TestDataInitSessionBean {
             
             arr = new Integer[] {1,1};
             CabinClassConfiguration ccc6 = new CabinClassConfiguration(F, 1, 5, 2, arr);
-            ccc6.getFares().size();
+            //ccc6.getFares().size();
             ccc6.setAircraftConfig(aircraftConfig747tc);
             aircraftConfig747tc.getCabinClassConfigs().add(ccc6);
             
             arr = new Integer[] {2,2,2};
             CabinClassConfiguration ccc7 = new CabinClassConfiguration(J, 2, 5, 6, arr);
-            ccc7.getFares().size();
+            //ccc7.getFares().size();
             ccc7.setAircraftConfig(aircraftConfig747tc);
             aircraftConfig747tc.getCabinClassConfigs().add(ccc7);
             
             arr = new Integer[] {3,4,3};
             CabinClassConfiguration ccc8 = new CabinClassConfiguration(Y, 2, 32, 10, arr);
-            ccc8.getFares().size();
+            //ccc8.getFares().size();
             ccc8.setAircraftConfig(aircraftConfig747tc);
             aircraftConfig747tc.getCabinClassConfigs().add(ccc8);
             

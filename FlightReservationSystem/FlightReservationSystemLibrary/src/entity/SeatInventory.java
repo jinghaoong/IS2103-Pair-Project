@@ -11,8 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 /**
  *
@@ -86,6 +84,10 @@ public class SeatInventory implements Serializable {
 
     public void setReserved(Integer reserved) {
         this.reserved = reserved;
+    }
+    
+    public Integer getBalance() {
+        return this.available - this.reserved;
     }
 
 }
