@@ -67,21 +67,14 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote {
     @Override
     public Customer login(String username, String password) throws InvalidCredentialsException {
 
-        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername")
-                .setParameter("inUsername", username);
+        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername AND c.password = :inPassword")
+                .setParameter("inUsername", username).setParameter("inPassword", password);
         
-        Customer customer = new Customer();
         try {
-            customer = (Customer) query.getSingleResult();
-        } catch (NoResultException ex) {
-            System.out.println("An account with this username does not exist!\n");
-            return null;
-        }
-        
-        if (customer.getPassword().equals(password)) {
+            Customer customer = (Customer) query.getSingleResult();
             return customer;
-        } else {
-            throw new InvalidCredentialsException("The username or password is incorrect, please try again!");
+        } catch (NoResultException ex) {
+            throw new InvalidCredentialsException("The username or password is incorrect, please try again.");
         }
     }
 
@@ -90,17 +83,17 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote {
     }
 
     @Override
-    public List<FlightReservation> retrieveFlightReservations(Long customerId) throws NoFlightReservationsMadeException {
+    public List<FlightReservation> retrieveFlightReservations(Long customerId) {
 
         Customer customer = em.find(Customer.class, customerId);
-        Query query = em.createQuery("SELECT f in FlightReservation f WHERE f.customer = :inCustomer")
+        Query query = em.createQuery("SELECT f FROM FlightReservation f WHERE f.customer = :inCustomer")
                 .setParameter("inCustomer", customer);
-        List<FlightReservation> flightReservations = query.getResultList();
         
-        if (flightReservations.isEmpty()) {
-            throw new NoFlightReservationsMadeException("No Flight Reservations have been made.");
-        } else {
+        try {
+            List<FlightReservation> flightReservations = query.getResultList();
             return flightReservations;
+        } catch (NoResultException ex) {
+            return new ArrayList<>();
         }
     }
 

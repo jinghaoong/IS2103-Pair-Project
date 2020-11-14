@@ -26,6 +26,6 @@ public interface CustomerSessionBeanRemote {
 
     public Customer login(String username, String password) throws InvalidCredentialsException;
 
-    public List<FlightReservation> retrieveFlightReservations(Long customerId) throws NoFlightReservationsMadeException;
+    public List<FlightReservation> retrieveFlightReservations(Long customerId);
     
 }
