@@ -6,12 +6,14 @@
 package frsreservationclient;
 
 import ejb.session.stateless.CustomerSessionBeanRemote;
+import entity.Airport;
 import entity.Customer;
 import entity.Flight;
 import entity.FlightReservation;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +22,6 @@ import util.exception.DataInputException;
 import util.exception.EmailAlreadyInUseException;
 import util.exception.InvalidCredentialsException;
 import util.exception.MobileNumberAlreadyInUseException;
-import util.exception.NoFlightReservationsMadeException;
 import util.exception.UsernameAlreadyTakenException;
 
 /**
@@ -37,7 +38,7 @@ public class MainApp {
         this.customerSessionBeanRemote = customerSessionBeanRemote;
     }
     
-    public void runApp() throws UsernameAlreadyTakenException, InvalidCredentialsException, EmailAlreadyInUseException, MobileNumberAlreadyInUseException, NoFlightReservationsMadeException {
+    public void runApp() throws UsernameAlreadyTakenException, InvalidCredentialsException, EmailAlreadyInUseException, MobileNumberAlreadyInUseException {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
         
@@ -46,7 +47,7 @@ public class MainApp {
             System.out.println("1: Register as Customer");
             System.out.println("2: Customer Login");
             System.out.println("3: Search Flights");
-            System.out.println("4: Exit\n");
+            System.out.println("Enter any other integer to exit.\n");
             response = 0;
             
             while(response < 1 || response > 4) {
@@ -60,13 +61,11 @@ public class MainApp {
                 } else if(response == 3) {
                     // searchFlight();
                     System.out.println("searchFlight to be completed by Sunday\n");
-                } else if (response == 4) {
-                    break;
                 } else {
-                    System.out.println("Invalid option, please try again!\n");                
+                    break;
                 }
             }
-            if(response == 4) {
+            if(response > 3) {
                 break;
             }
         }
@@ -103,7 +102,7 @@ public class MainApp {
         }
     }
     
-    public void doCustomerLogin() throws InvalidCredentialsException, NoFlightReservationsMadeException {
+    public void doCustomerLogin() throws InvalidCredentialsException {
         
         Scanner sc = new Scanner(System.in);
         System.out.println("*** Login as Customer ***\n");
@@ -115,11 +114,11 @@ public class MainApp {
         
         try {
             loggedInCustomer = customerSessionBeanRemote.login(username, password);
+            postLogin();
         } catch (InvalidCredentialsException ex) {
-            System.out.println("The username or password is incorrect, please try again!");
+            System.out.println(ex.getMessage());
+            System.out.println();
         }
-        
-        postLogin();
     }
     
 //    public void searchFlight() throws DataInputException {
@@ -167,7 +166,7 @@ public class MainApp {
 //        
 //    }
     
-    public void postLogin() throws NoFlightReservationsMadeException {
+    public void postLogin() {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** You have successfully logged in! ***\n");
         Integer response = 0;
@@ -177,7 +176,7 @@ public class MainApp {
             System.out.println("1: Reserve Flight");
             System.out.println("2: View My Flight Reservations");
             System.out.println("3: View My Flight Reservation Details");
-            System.out.println("4: Logout\n");
+            System.out.println("4: Enter Logout\n");
             response = 0;
             
             while(response < 1 || response > 4) {
@@ -200,7 +199,6 @@ public class MainApp {
                 break;
             }
         }
-        
         if (response == 4) {
             doLogout();
         }
@@ -210,16 +208,47 @@ public class MainApp {
         
     }
     
-    public void viewFlightReservations() throws NoFlightReservationsMadeException {
+    public void viewFlightReservations(){
         System.out.println("*** View Flight Reservations ***\n");
         
-        List<FlightReservation> listOfFlightReservations = customerSessionBeanRemote
-                .retrieveFlightReservations(loggedInCustomer.getCustomerId());
-        
-        if (listOfFlightReservations.isEmpty()) {
-            
+        Long customerId;
+        if (loggedInCustomer != null) {
+            customerId = loggedInCustomer.getCustomerId();
+        } else {
+            customerId = 0l;
         }
-        for (FlightReservation fr : listOfFlightReservations) {
+        List<FlightReservation> listOfFlightReservations = customerSessionBeanRemote.retrieveFlightReservations(customerId);
+
+        if (listOfFlightReservations.isEmpty()) {
+            System.out.println("No Flight Reservations have been made. Make a reservation today!\n");
+            //System.out.println("Date\t\tTime\tFlight Number\tOrigin\tDestination\n");
+            //System.out.println("1234-56-78\t69:69\tMH370\t\tMAL\tNIL\n");
+        } else {
+            System.out.println("Date\t\tTime\tFlight Number\tOrigin\tDestination\n");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd\thh:mm");
+            FlightSchedule flightSchedule;
+            Date departure;
+            String departureFormat;
+            Flight flight;
+            String flightNum;
+            FlightRoute flightRoute;
+            Airport airport;
+            String origin;
+            String destination;
+            for (FlightReservation fr : listOfFlightReservations) {
+                flightSchedule = fr.getFlightSchedule();
+                departure = flightSchedule.getDepartureDateTime();
+                departureFormat = format.format(departure);
+                flight = flightSchedule.getFlight();
+                flightNum = flight.getFlightNumber();
+                flightRoute = flight.getFlightRoute();
+                airport = flightRoute.getOriginAirport();
+                origin = airport.getAirportCode();
+                airport = flightRoute.getDestinationAirport();
+                destination = airport.getAirportCode();
+                
+                System.out.println(departureFormat + "\t" + flightNum + "\t\t" + origin + "\t" + destination);
+            }
             System.out.println();
         }
     }
