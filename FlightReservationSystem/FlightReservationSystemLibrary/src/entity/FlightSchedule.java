@@ -8,6 +8,8 @@ package entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import static java.util.Calendar.HOUR;
+import static java.util.Calendar.MINUTE;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -45,6 +47,9 @@ public class FlightSchedule implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date arrivalDateTime;
+    @Temporal(TemporalType.DATE)
+    @Column(nullable = false)
+    private Date departureDate;
     
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
@@ -68,6 +73,7 @@ public class FlightSchedule implements Serializable {
     public FlightSchedule(Date departureDateTime, Integer estimatedFlightDurationHour, Integer estimatedFlightDurationMinute) {
         this();
         this.departureDateTime = departureDateTime;
+        this.setDepartureDate(departureDateTime);
         this.estimatedFlightDurationHour = estimatedFlightDurationHour;
         this.estimatedFlightDurationMinute = estimatedFlightDurationMinute;
     }
@@ -111,6 +117,7 @@ public class FlightSchedule implements Serializable {
 
     public void setDepartureDateTime(Date departureDateTime) {
         this.departureDateTime = departureDateTime;
+        this.setDepartureDate(departureDateTime);
     }
 
     public Integer getEstimatedFlightDurationHour() {
@@ -180,5 +187,17 @@ public class FlightSchedule implements Serializable {
         adt.add(Calendar.MINUTE, this.estimatedFlightDurationMinute);
         
         setArrivalDateTime(adt.getTime());
+    }
+
+    public Date getDepartureDate() {
+        return departureDate;
+    }
+
+    public void setDepartureDate(Date departureDateTime) {
+        Calendar departureDate = Calendar.getInstance();
+        departureDate.setTime(this.departureDateTime);
+        departureDate.set(HOUR, 0);
+        departureDate.set(MINUTE, 0);
+        this.departureDate = departureDate.getTime();
     }
 }
