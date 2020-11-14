@@ -5,15 +5,22 @@
  */
 package ejb.session.stateless;
 
+import entity.AircraftConfiguration;
+import entity.CabinClassConfiguration;
 import entity.Customer;
 import entity.Flight;
 import entity.FlightReservation;
+import entity.FlightSchedule;
+import entity.SeatInventory;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.enumeration.CabinClass;
 import util.exception.EmailAlreadyInUseException;
 import util.exception.InvalidCredentialsException;
 import util.exception.MobileNumberAlreadyInUseException;
@@ -34,43 +41,123 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote {
 
         Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername")
                 .setParameter("inUsername", newCustomer.getUsername());
-        List<Customer> c1 = query.getResultList();
-        query = em.createQuery("SELECT c FROM Customer c WHERE c.email = :inEmail")
+        try {
+            Customer customer = (Customer) query.getSingleResult();
+            throw new UsernameAlreadyTakenException("This username has already been taken, please try again.");
+        } catch (NoResultException ex1) {
+            
+            query = em.createQuery("SELECT c FROM Customer c WHERE c.email = :inEmail")
                 .setParameter("inEmail", newCustomer.getEmail());
-        List<Customer> c2 = query.getResultList();
-        query = em.createQuery("SELECT c FROM Customer c WHERE c.mobileNumber = :inMobileNumber")
+            try {
+                Customer customer = (Customer) query.getSingleResult();
+                throw new EmailAlreadyInUseException("An account with this email is already in use!");
+            } catch (NoResultException ex2) {
+            
+                query = em.createQuery("SELECT c FROM Customer c WHERE c.mobileNumber = :inMobileNumber")
                 .setParameter("inMobileNumber", newCustomer.getMobileNumber());
-        List<Customer> c3 = query.getResultList();
+                try {
+                    Customer customer = (Customer) query.getSingleResult();
+                    throw new MobileNumberAlreadyInUseException("An account with this mobile number is already in use!");
+                } catch (NoResultException ex) {
+
+                    em.persist(newCustomer);
+                    em.flush();
         
-        if (!c1.isEmpty()) {
-            throw new UsernameAlreadyTakenException("Username is already taken. Please try again.\n");
-        } else if (!c2.isEmpty()) {
-            throw new EmailAlreadyInUseException("An account with the email is already in use. Please try again.\n");
-        } else if (!c3.isEmpty()) {
-            throw new MobileNumberAlreadyInUseException("An account with the mobile number is already in use. Please try again.\n");
-        } else {
-            em.persist(newCustomer);
-            em.flush();
+                    return newCustomer.getCustomerId();
+                }
+            }
         }
-        
-        return newCustomer.getCustomerId();
     }
 
     @Override
     public Customer login(String username, String password) throws InvalidCredentialsException {
 
-        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername")
-                .setParameter("inUsername", username);
-        Customer customer = (Customer) query.getSingleResult(); // can catch here also
-
-        if (customer.getPassword().equals(password)) {
+        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :inUsername AND c.password = :inPassword")
+                .setParameter("inUsername", username).setParameter("inPassword", password);
+        
+        try {
+            Customer customer = (Customer) query.getSingleResult();
             return customer;
-        } else {
-            throw new InvalidCredentialsException("The username or password is incorrect, please try again!");
+        } catch (NoResultException ex) {
+            throw new InvalidCredentialsException("The username or password is incorrect, please try again.");
         }
     }
 
-    public List<Flight> makeSearch() {
+    @Override
+    public List<Flight> makeDirectSearch(String departureAirport, String destinationAirport, Date departureDate,
+            Integer numOfPassengers, String cabinClass) {
+        
+        long MILLIS_PER_DAY = 86400000;
+        CabinClass cabClass = CabinClass.F;
+        if (!cabinClass.equals("N")) { // if customer has a preference
+            cabClass = CabinClass.valueOf(cabinClass);
+        }
+        
+        // all cabin classes all dates
+        Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.departureDateTime.getTime()/MILLIS_PER_DAY = :inDepartureDate AND fs.flight.flightRoute.originAirport.airportName = :inDepartureAirport AND fs.flight.flightRoute.destinationAirport = :inDestinationAirport AND fs.seatInventories.available >= :inPax")
+                .setParameter("inDepartureAirport", departureAirport)
+                .setParameter("inDestinationAirport", destinationAirport)
+                .setParameter("inDepartureDate", departureDate.getTime()/MILLIS_PER_DAY)
+                .setParameter("inPax", numOfPassengers);
+        
+        if (!cabinClass.equals("N")) { // has a preference
+            try {
+                List<FlightSchedule> flightSchedules = query.getResultList();
+                List<Flight> flights = new ArrayList<>();
+                for (FlightSchedule fs : flightSchedules) {
+                    Flight flight = fs.getFlight();
+                    if (enoughSeatsInCabin(fs, cabClass, numOfPassengers)) {
+                        flights.add(flight);
+                    }
+                }
+                return flights;
+            } catch (NoResultException ex) {
+                return new ArrayList<>();
+            }
+        } else { // no preference
+            try {
+                List<FlightSchedule> flightSchedules = query.getResultList();
+                List<Flight> flights = new ArrayList<>();
+                for (FlightSchedule fs : flightSchedules) {
+                    Flight flight = fs.getFlight();
+                    Integer availableSeats = 0;
+                    List<SeatInventory> seatInventories = fs.getSeatInventories();
+                    for (SeatInventory si : seatInventories) {
+                        availableSeats += si.getAvailable();
+                    }
+                    if (availableSeats >= numOfPassengers) {
+                        flights.add(flight);
+                    }
+                }
+                return flights;
+            } catch (NoResultException ex) {
+                return new ArrayList<>();
+            }
+        }
+    }
+    
+    @Override
+    public Boolean enoughSeatsInCabin(FlightSchedule flightSchedule, CabinClass cabinClass, Integer numOfPassengers) {
+        
+        Flight flight = flightSchedule.getFlight();
+        AircraftConfiguration aircraftConfig = flight.getAircraftConfig();
+        List<CabinClassConfiguration> cabinConfigs = aircraftConfig.getCabinClassConfigs();
+        List<SeatInventory> seatInventories = flightSchedule.getSeatInventories();
+        
+        for (int i = 0; i < cabinConfigs.size(); i++) {
+            if (cabinConfigs.get(i).getCabinClass() == cabinClass && seatInventories.get(i).getAvailable() >= numOfPassengers) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    @Override
+    public List<List<Flight>> makeConnectingSearch(String departureAirport, String destinationAirport, Date departureDate,
+            Integer numOfPassengers, String cabinClass) {
+        
+        
         return new ArrayList<>();
     }
 
@@ -78,7 +165,15 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote {
     public List<FlightReservation> retrieveFlightReservations(Long customerId) {
 
         Customer customer = em.find(Customer.class, customerId);
-        return customer.getFlightReservations();
+        Query query = em.createQuery("SELECT f FROM FlightReservation f WHERE f.customer = :inCustomer")
+                .setParameter("inCustomer", customer);
+        
+        try {
+            List<FlightReservation> flightReservations = query.getResultList();
+            return flightReservations;
+        } catch (NoResultException ex) {
+            return new ArrayList<>();
+        }
     }
 
 }

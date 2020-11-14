@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+<<<<<<< HEAD
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
         <file>
             <url>src/entity/AircraftConfigurationEntity.java</url>
@@ -18,5 +19,10 @@
             <file>file:/Users/jinghao/Desktop/Y2S1/IS2103/pair_project/FlightReservationSystem/FlightReservationSystemLibrary/src/entity/FlightSchedule.java</file>
             <file>file:/Users/jinghao/Desktop/Y2S1/IS2103/pair_project/FlightReservationSystem/FlightReservationSystemLibrary/src/entity/Fare.java</file>
         </group>
+=======
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group/>
+>>>>>>> 4b9c32e038cfd1b63de4a67b82f1fd8ac7d8f2da
     </open-files>
 </project-private>

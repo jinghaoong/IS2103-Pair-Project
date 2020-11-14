@@ -2,8 +2,12 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+<<<<<<< HEAD
         <group>
             <file>file:/Users/jinghao/Desktop/Y2S1/IS2103/pair_project/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightOperationSessionBean.java</file>
         </group>
+=======
+        <group/>
+>>>>>>> 4b9c32e038cfd1b63de4a67b82f1fd8ac7d8f2da
     </open-files>
 </project-private>
