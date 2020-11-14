@@ -169,13 +169,13 @@ public class MainApp {
         List<Flight> directFlights = new ArrayList<>();
         List<List<Flight>> connectingFlights = new ArrayList<>();
 
-        if (directOrConnecting == 1) {
+        if (directOrConnecting == 1) { // direct
             directFlights = customerSessionBeanRemote.makeDirectSearch(departureAirport, destinationAirport, 
                 departureDate, numOfPassengers, cabinClass);
             
         }
         
-        if (directOrConnecting == 2) {
+        if (directOrConnecting == 2) { // connecting
             connectingFlights = customerSessionBeanRemote.makeConnectingSearch(departureAirport, destinationAirport, 
                 departureDate, numOfPassengers, cabinClass);
         }
