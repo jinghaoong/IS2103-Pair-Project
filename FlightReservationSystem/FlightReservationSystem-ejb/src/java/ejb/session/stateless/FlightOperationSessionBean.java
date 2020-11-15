@@ -22,7 +22,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.FareBasisCodeExistException;
 import util.exception.FlightAlreadyExistException;
-import util.exception.FlightNumberDoesNotExistException;
+import util.exception.FlightNumberDisabledException;
 import util.exception.FlightScheduleOverlapException;
 import util.exception.ViolationException;
 
@@ -115,13 +115,18 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
     }
 
     @Override
-    public Flight retrieveFlightByNumber(String flightNumber) throws FlightNumberDoesNotExistException {
+    public Flight retrieveFlightByNumber(String flightNumber) throws FlightNumberDisabledException {
         
         Query query = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :flightNumber");
         query.setParameter("flightNumber", flightNumber);
         
         try {
             Flight flight = (Flight)query.getSingleResult();
+            
+            if (!flight.getEnabled()) {
+                throw new FlightNumberDisabledException();
+            }
+            
             flight.getFlightSchedules().size();
             
             for (FlightSchedule fs : flight.getFlightSchedules()) {
@@ -136,8 +141,8 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
             
             return flight;
         }
-        catch (NoResultException ex) {
-            throw new FlightNumberDoesNotExistException("Flight with given flight number does not exist!");
+        catch (NoResultException | FlightNumberDisabledException ex) {
+            throw new FlightNumberDisabledException("Flight with given flight number does not exist / is disabled!");
         }
     }
     

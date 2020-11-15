@@ -152,13 +152,22 @@ public class FlightPlanningSessionBean implements FlightPlanningSessionBeanRemot
         
         Query query = em.createQuery("SELECT fr FROM FlightRoute AS fr");
         List<FlightRoute> flightRoutes = query.getResultList();
-        List<FlightRoute> temp = new ArrayList<>();
+        List<FlightRoute> remove = new ArrayList<>();
         
         for (int i = 0; i < flightRoutes.size(); i++) {
             FlightRoute fr = flightRoutes.get(i);
             
-            if (fr.getReturnFlightRoute() != null) {
-                flightRoutes.remove(fr.getReturnFlightRoute());
+            if (!fr.getEnabled()) {
+                remove.add(fr);
+            }
+            else if (fr.getReturnFlightRoute() != null) {
+                remove.add(fr.getReturnFlightRoute());
+            }
+        }
+        
+        for (FlightRoute fr : remove) {
+            if (flightRoutes.contains(fr)) {
+                flightRoutes.remove(fr);
             }
         }
         
