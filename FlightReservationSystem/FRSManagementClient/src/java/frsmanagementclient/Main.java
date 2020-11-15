@@ -8,6 +8,7 @@ package frsmanagementclient;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FlightOperationSessionBeanRemote;
 import ejb.session.stateless.FlightPlanningSessionBeanRemote;
+import ejb.session.stateless.ValidatorSessionBeanRemote;
 import javax.ejb.EJB;
 
 /**
@@ -22,6 +23,8 @@ public class Main {
     private static FlightPlanningSessionBeanRemote flightPlanningSessionBeanRemote;
     @EJB
     private static FlightOperationSessionBeanRemote flightOperationSessionBeanRemote;
+    @EJB
+    private static ValidatorSessionBeanRemote validatorSessionBeanRemote;
     
     /**
      * @param args the command line arguments
@@ -34,7 +37,7 @@ public class Main {
             System.out.println("********** NOT null");
         */
         
-        MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightPlanningSessionBeanRemote, flightOperationSessionBeanRemote);
+        MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightPlanningSessionBeanRemote, flightOperationSessionBeanRemote, validatorSessionBeanRemote);
         mainApp.runApp();
     }
     

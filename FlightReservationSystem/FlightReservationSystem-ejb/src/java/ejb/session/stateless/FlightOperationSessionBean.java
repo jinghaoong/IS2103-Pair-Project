@@ -12,7 +12,9 @@ import entity.FlightReservation;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -22,6 +24,7 @@ import util.exception.FareBasisCodeExistException;
 import util.exception.FlightAlreadyExistException;
 import util.exception.FlightNumberDoesNotExistException;
 import util.exception.FlightScheduleOverlapException;
+import util.exception.ViolationException;
 
 /**
  *
@@ -32,13 +35,14 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
-    
+    @EJB
+    private ValidatorSessionBeanLocal validatorSessionBeanLocal; 
     /*
     Flight
     */
     
     @Override
-    public Flight createFlight(Flight newFlight) throws FlightAlreadyExistException {
+    public Flight createFlight(Flight newFlight) throws FlightAlreadyExistException, ViolationException {
         
         Query query = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :flightNumber");
         query.setParameter("flightNumber", newFlight.getFlightNumber());
@@ -48,6 +52,12 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
             throw new FlightAlreadyExistException("Flight already exists!");
         }
         catch (NoResultException ex) {
+            // continue
+        }
+        
+        try {
+            validatorSessionBeanLocal.validate(newFlight);
+            
             FlightRoute flightRoute = em.find(FlightRoute.class, newFlight.getFlightRoute().getFlightRouteId());
             flightRoute.getFlights().add(newFlight);
 
@@ -55,6 +65,9 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
             em.flush();
 
             return newFlight;
+        }
+        catch (ViolationException ex) {
+            throw new ViolationException(ex.getMessage());
         }
     }
     
@@ -80,12 +93,14 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
         Query query = em.createQuery("SELECT f FROM Flight AS f");
         List<Flight> flights = query.getResultList();
         
+        /*
         for (int i = 0; i < flights.size(); i++) {
             Flight f = flights.get(i);
             if (f.getReturnFlight() != null) {
                 flights.remove(f.getReturnFlight());
             }
         }
+        */
         
         flights.sort((Flight f1, Flight f2) -> f1.getFlightNumber().compareTo(f2.getFlightNumber()));
         
@@ -111,12 +126,6 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
             
             for (FlightSchedule fs : flight.getFlightSchedules()) {
                 fs.getSeatInventories().size();
-                
-                /*
-                for (FlightReservation fr : fs.getFlightReservations()) {
-                    fr.getCustomer();
-                }
-                */
             }
             
             flight.getAircraftConfig().getCabinClassConfigs().size();
@@ -176,8 +185,9 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
             }
         }
         
-        
         flightSchedule.getFlightReservations().size();
+        
+        //Cascaded
         //em.persist(flightSchedule);
         //em.flush();
         
@@ -194,33 +204,34 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
     }
 
     @Override
-    public FlightSchedulePlan createFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+    public FlightSchedulePlan createFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws ViolationException {
         
-        /*
-        for (FlightSchedule fs : flightSchedulePlan.getFlightSchedules()) {
+        try {
+            Query query = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :flightNumber");
+            query.setParameter("flightNumber", flightSchedulePlan.getFlightNumber());
             
-            for (SeatInventory si : fs.getSeatInventories()) {
-                em.persist(si);
+            Flight flight = (Flight)query.getSingleResult();
+            
+            validatorSessionBeanLocal.validate(flightSchedulePlan);
+            flightSchedulePlan.getStartDate();
+            flightSchedulePlan.getEnabled();
+            flightSchedulePlan.getFlightSchedules();
+            flightSchedulePlan.getFares();
+            
+            for (FlightSchedule fs : flightSchedulePlan.getFlightSchedules()) {
+                flight.getFlightSchedules().add(fs);
             }
             
-            fs.getFlightReservations().size();
-            fs.getSeatInventories().size();
-            em.persist(fs);
+            em.persist(flightSchedulePlan);
+            em.merge(flight);
+            em.flush();
+
+            return flightSchedulePlan;
+        }
+        catch (ViolationException ex) {
+            throw new ViolationException(ex.getMessage());
         }
         
-        for (Fare f : flightSchedulePlan.getFares()) {
-            em.persist(f);
-        }
-        */
-        
-        flightSchedulePlan.getStartDate();
-        flightSchedulePlan.getEnabled();
-        flightSchedulePlan.getFlightSchedules();
-        flightSchedulePlan.getFares();
-        em.persist(flightSchedulePlan);
-        em.flush();
-        
-        return flightSchedulePlan;
     }
 
     @Override
@@ -244,12 +255,9 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
             throw new FareBasisCodeExistException("Fare basis code already exists in Flight Schedule Plan!");
         }
         catch (NoResultException ex) {
-            
-            //em.persist(fare);
-            //em.flush();
-            
-            return fare;
+            // continue
         }
+        return fare;
     }
 
     @Override
@@ -258,12 +266,14 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
     }
 
     @Override
-    public List<FlightSchedulePlan> retrieveAllFlightSchedulePlans() {
+    public List<FlightSchedulePlan> retrieveAllMainFlightSchedulePlans() {
         
         Query query = em.createQuery("SELECT fsp FROM FlightSchedulePlan AS fsp");
         
         List<FlightSchedulePlan> flightSchedulePlans = query.getResultList();
+        List<FlightSchedulePlan> remove = new ArrayList<>();
         
+        /*
         for (int i = 0; i < flightSchedulePlans.size(); i++) {
             FlightSchedulePlan fsp = flightSchedulePlans.get(i);
             
@@ -279,9 +289,32 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
                 fs.getFlightReservations().size();
             }
         }
+        */
+        
+        for (FlightSchedulePlan fsp : flightSchedulePlans) {
+            if (fsp.getReturnFlightSchedulePlan() != null) {
+                remove.add(fsp.getReturnFlightSchedulePlan());
+            }
+        }
+        
+        for (FlightSchedulePlan rfsp : remove) {
+            flightSchedulePlans.remove(rfsp);
+        }
         
         flightSchedulePlans.sort((FlightSchedulePlan fsp1, FlightSchedulePlan fsp2) -> fsp1.getStartDate().compareTo(fsp2.getStartDate()));
         flightSchedulePlans.sort((FlightSchedulePlan fsp1, FlightSchedulePlan fsp2) -> fsp1.getFlightNumber().compareTo(fsp2.getFlightNumber()));
+        
+        for (FlightSchedulePlan fsp : flightSchedulePlans) {
+            fsp.getFlightSchedules().size();
+            fsp.getReturnFlightSchedulePlan();
+            fsp.getFares().size();
+            
+            for (FlightSchedule fs : fsp.getFlightSchedules()) {
+                fs.getFlight().getFlightRoute().getOriginAirport();
+                fs.getFlight().getFlightRoute().getDestinationAirport();
+                fs.getFlightReservations().size();
+            }
+        }
         
         return flightSchedulePlans;
         
@@ -308,6 +341,32 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
         FlightSchedulePlan fsp = em.find(FlightSchedulePlan.class, flightSchedulePlan.getFlightSchedulePlanId());
         
         em.remove(fsp);
+    }
+
+    @Override
+    public void updateFare(Fare newFare) {
+        em.merge(newFare);
+    }
+
+    @Override
+    public List<FlightSchedulePlan> retrieveAllFlightSchedulePlans() {
+        
+        Query query = em.createQuery("SELECT fsp FROM FlightSchedulePlan AS fsp");
+        List<FlightSchedulePlan> flightSchedulePlans = query.getResultList();
+        
+        for (FlightSchedulePlan fsp : flightSchedulePlans) {
+            fsp.getFlightSchedules().size();
+            fsp.getReturnFlightSchedulePlan();
+            fsp.getFares().size();
+            
+            for (FlightSchedule fs : fsp.getFlightSchedules()) {
+                fs.getFlight().getFlightRoute().getOriginAirport();
+                fs.getFlight().getFlightRoute().getDestinationAirport();
+                fs.getFlightReservations().size();
+            }
+        }
+        
+        return null;
     }
     
 }

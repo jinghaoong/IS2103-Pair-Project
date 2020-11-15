@@ -12,15 +12,18 @@ import entity.CabinClassConfiguration;
 import entity.FlightRoute;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import util.exception.AircraftConfigExistException;
 import util.exception.AirportNotFoundException;
 import util.exception.FlightRouteAlreadyExistException;
 import util.exception.FlightRouteNotFoundException;
+import util.exception.ViolationException;
 
 /**
  *
@@ -31,6 +34,8 @@ public class FlightPlanningSessionBean implements FlightPlanningSessionBeanRemot
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
+    @EJB
+    private ValidatorSessionBeanLocal validatorSessionBeanLocal;
 
     /*
     Fleet Manager methods
@@ -43,7 +48,18 @@ public class FlightPlanningSessionBean implements FlightPlanningSessionBeanRemot
     }
 
     @Override
-    public void createAircraftConfig(AircraftConfiguration newAircraftConfig) {
+    public void createAircraftConfig(AircraftConfiguration newAircraftConfig) throws AircraftConfigExistException {
+        
+        Query query = em.createQuery("SELECT ac FROM AircraftConfiguration ac WHERE ac.aircraftConfigName = :configName");
+        query.setParameter("configName", newAircraftConfig.getAircraftConfigName());
+        
+        try {
+            query.getSingleResult();
+            throw new AircraftConfigExistException("Aircraft Configuration with given name exists!");
+        }
+        catch (NoResultException ex) {
+            // continue
+        }
         
         Long id = newAircraftConfig.getAircraftType().getAircraftTypeId();
         
@@ -98,7 +114,7 @@ public class FlightPlanningSessionBean implements FlightPlanningSessionBeanRemot
     }
 
     @Override
-    public FlightRoute createFlightRoute(Airport originAirport, Airport destinationAirport) throws FlightRouteAlreadyExistException {
+    public FlightRoute createFlightRoute(Airport originAirport, Airport destinationAirport) throws FlightRouteAlreadyExistException, ViolationException {
         
         String originCode = originAirport.getAirportCode();
         String destinationCode = destinationAirport.getAirportCode();
@@ -107,13 +123,22 @@ public class FlightPlanningSessionBean implements FlightPlanningSessionBeanRemot
             FlightRoute flightRoute = retrieveFlightRouteByCodes(originCode, destinationCode);
             throw new FlightRouteAlreadyExistException("Flight Route already exists!");
         } catch (FlightRouteNotFoundException ex) {
+            // continue
+        }
+        
+        try {
             FlightRoute flightRoute = new FlightRoute(originAirport, destinationAirport);
-            flightRoute.getFlights().size();
+            validatorSessionBeanLocal.validate(flightRoute);
             
+            flightRoute.getFlights().size();
+
             em.persist(flightRoute);
             em.flush();
-            
+
             return flightRoute;
+        }
+        catch (ViolationException ex) {
+            throw new ViolationException(ex.getMessage());
         }
     }
 

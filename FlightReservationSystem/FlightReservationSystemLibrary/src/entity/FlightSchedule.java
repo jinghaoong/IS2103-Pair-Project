@@ -50,7 +50,7 @@ public class FlightSchedule implements Serializable {
     private Integer estimatedFlightDurationHour;
     @Column(nullable = false, length = 2)
     @NotNull
-    @Positive
+    @PositiveOrZero
     private Integer estimatedFlightDurationMinute;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)

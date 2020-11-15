@@ -17,6 +17,7 @@ import util.exception.FareBasisCodeExistException;
 import util.exception.FlightAlreadyExistException;
 import util.exception.FlightNumberDoesNotExistException;
 import util.exception.FlightScheduleOverlapException;
+import util.exception.ViolationException;
 
 /**
  *
@@ -25,7 +26,7 @@ import util.exception.FlightScheduleOverlapException;
 @Remote
 public interface FlightOperationSessionBeanRemote {
 
-    Flight createFlight(Flight newFlight) throws FlightAlreadyExistException;
+    Flight createFlight(Flight newFlight) throws FlightAlreadyExistException, ViolationException;
 
     void updateFlight(Flight flight);
     
@@ -43,7 +44,7 @@ public interface FlightOperationSessionBeanRemote {
 
     FlightSchedule updateFlightSchedule(FlightSchedule flightSchedule);
 
-    FlightSchedulePlan createFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan);
+    FlightSchedulePlan createFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws ViolationException;
 
     FlightSchedulePlan updateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan);
 
@@ -51,10 +52,14 @@ public interface FlightOperationSessionBeanRemote {
 
     void updateCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration);
 
-    List<FlightSchedulePlan> retrieveAllFlightSchedulePlans();
+    List<FlightSchedulePlan> retrieveAllMainFlightSchedulePlans();
 
     List<FlightReservation> retrieveFlightReservationsByCabinClass(CabinClassConfiguration cabinClass);
 
     void deleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan);
+
+    void updateFare(Fare newFare);
+
+    List<FlightSchedulePlan> retrieveAllFlightSchedulePlans();
 
 }

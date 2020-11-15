@@ -8,6 +8,7 @@ package frsmanagementclient;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FlightOperationSessionBeanRemote;
 import ejb.session.stateless.FlightPlanningSessionBeanRemote;
+import ejb.session.stateless.ValidatorSessionBeanRemote;
 import entity.AircraftConfiguration;
 import entity.AircraftType;
 import entity.Airport;
@@ -34,6 +35,7 @@ import java.util.Scanner;
 import util.enumeration.CabinClass;
 import util.enumeration.EmployeeRole;
 import util.enumeration.FlightScheduleType;
+import util.exception.AircraftConfigExistException;
 import util.exception.AirportNotFoundException;
 import util.exception.EmployeeNotFoundException;
 import util.exception.FareBasisCodeExistException;
@@ -46,6 +48,7 @@ import util.exception.InvalidDateTimeException;
 import util.exception.InvalidDurationException;
 import util.exception.MaximumSeatCapacityExceededException;
 import util.exception.NumberOfSeatsPerRowMismatchException;
+import util.exception.ViolationException;
 
 /**
  *
@@ -55,18 +58,21 @@ public class MainApp {
     
     private Scanner scanner;
     private Employee employee;
-    private Integer flightNumberIncrement = 5;
+    
+    //private Integer flightNumberIncrement = 5;
     
     private EmployeeSessionBeanRemote employeeSessionBeanRemote;
     private FlightPlanningSessionBeanRemote flightPlanningSessionBeanRemote;
     private FlightOperationSessionBeanRemote flightOperationSessionBeanRemote;
+    private ValidatorSessionBeanRemote validatorSessionBeanRemote;
     
     
-    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, FlightPlanningSessionBeanRemote flightPlanningSessionBeanRemote, FlightOperationSessionBeanRemote flightOperationSessionBeanRemote) {
+    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, FlightPlanningSessionBeanRemote flightPlanningSessionBeanRemote, FlightOperationSessionBeanRemote flightOperationSessionBeanRemote, ValidatorSessionBeanRemote validatorSessionBeanRemote) {
         
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
         this.flightPlanningSessionBeanRemote = flightPlanningSessionBeanRemote;
         this.flightOperationSessionBeanRemote = flightOperationSessionBeanRemote;
+        this.validatorSessionBeanRemote = validatorSessionBeanRemote;
         
         /*
         if(this.employeeSessionBeanRemote == null)
@@ -229,13 +235,14 @@ public class MainApp {
                     doViewAllFlightSchedulePlans();
                 }
                 else if (response.equalsIgnoreCase("D3")) {
-                    doViewFlightScheduleDetails();
+                    doViewFlightSchedulePlanDetails();
                 }
                 
                 
                 else if (response.equalsIgnoreCase("Q")) {
                     doLogout();
                     System.out.println("Logging out ...\n");
+                    break;
                 }
                 else {
                     System.out.println("Invalid response!\n");
@@ -261,10 +268,15 @@ public class MainApp {
             while (response < 1 || response > 4) {
                 
                 System.out.print("> ");
-                response = scanner.nextInt();
-                scanner.nextLine();
-                
-                System.out.println();
+                if (scanner.hasNextInt()) {
+                    response = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println();
+                }
+                else {
+                    response = 0;
+                    scanner.nextLine();
+                }
                 
                 if (response == 1) {
                     try {
@@ -286,6 +298,7 @@ public class MainApp {
                 }
                 else {
                     System.out.println("Please input an integer from 1 to 4\n");
+                    break;
                 }
             }
             
@@ -310,10 +323,16 @@ public class MainApp {
             while (response < 1 || response > 4) {
                 
                 System.out.print("> ");
-                response = scanner.nextInt();
-                scanner.nextLine();
+                if (scanner.hasNextInt()) {
+                    response = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println();
+                }
+                else {
+                    response = 0;
+                    scanner.nextLine();
+                }
                 
-                System.out.println();
                 
                 if (response == 1) {
                     doCreateFlightRoute();
@@ -330,6 +349,7 @@ public class MainApp {
                 }
                 else {
                     System.out.println("Please input an integer from 1 to 4\n");
+                    break;
                 }
             }
             
@@ -360,9 +380,16 @@ public class MainApp {
             while (response < 1 || response > 7) {
                 
                 System.out.print("> ");
-                response = scanner.nextInt();
-                scanner.nextLine();
-                System.out.println();
+                if (scanner.hasNextInt()) {
+                    response = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println();
+                }
+                else {
+                    response = 0;
+                    scanner.nextLine();
+                }
+                
                 
                 if (response == 1) {
                     doCreateFlight();
@@ -380,7 +407,7 @@ public class MainApp {
                     doViewAllFlightSchedulePlans();
                 }
                 else if (response == 6) {
-                    doViewFlightScheduleDetails(); // includes Update, Delete
+                    doViewFlightSchedulePlanDetails(); // includes Update, Delete
                 }
                 else if (response == 7) {
                     doLogout();
@@ -388,6 +415,7 @@ public class MainApp {
                 }
                 else {
                     System.out.println("Please input an integer from 1 to 7\n");
+                    break;
                 }
             }
             
@@ -405,16 +433,23 @@ public class MainApp {
             System.out.println("Welcome, Sales Manager " + employee.getName() + "!\n");
             
             System.out.println("1: View Seats Inventory");
-            System.out.println("2: View All Flights");
+            System.out.println("2: View Flight Reservations");
             System.out.println("3: Logout\n");
             response = 0;
             
             while (response < 1 || response > 3) {
                 
                 System.out.print("> ");
-                response = scanner.nextInt();
-                scanner.nextLine();
-                System.out.println();
+                if (scanner.hasNextInt()) {
+                    response = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println();
+                }
+                else {
+                    response = 0;
+                    scanner.nextLine();
+                }
+                
                 
                 if (response == 1) {
                     doViewSeatsInventory();
@@ -429,6 +464,7 @@ public class MainApp {
                 }
                 else {
                     System.out.println("Please input an integer from 1 to 3\n");
+                    break;
                 }
             }
             
@@ -448,35 +484,38 @@ public class MainApp {
         
         while (true) {
             System.out.println("*** Create Aircraft Configuration ***\n");
-            System.out.println("Select Aircraft Type (0 : skip , 1 : select)");
+            System.out.println("Select Aircraft Type (0 : skip , 1 : select, other integer : exit)");
             response = 0;
             for (Integer i = 0; i < aircraftTypes.size(); i++) {
                 System.out.print("Aircraft Type - " + aircraftTypes.get(i).getAircraftTypeName() + ": ");
                 response = scanner.nextInt();
                 
-                if (response == 1) {
+                if (response == 0) {
+                    //skip
+                }
+                else if (response == 1) {
                     aircraftType = aircraftTypes.get(i);
                     scanner.nextLine();
                     break;
                 }
+                else {
+                    break;
+                }
             }
             
-            if (response == 0) {
-                System.out.println("No aircraft type selected!");
-                
+            if (response == 1) {
+                break;
+            } else {
                 System.out.println("... Press enter to return ...");
                 scanner.nextLine();
                 System.out.println();
                 return;
             }
-            if (response == 1) {
-                break;
-            }
         }
         
         System.out.print("Enter Aircraft Configuration Name: "); // unique
         String name = scanner.nextLine().trim();
-        System.out.print("Enter number of Cabin Classes: "); // 1 - 4
+        System.out.print("Enter number of Cabin Classes (1 - 4): "); // 1 - 4
         Integer numCabinClass = scanner.nextInt();
         scanner.nextLine();
         
@@ -522,8 +561,14 @@ public class MainApp {
         AircraftConfiguration aircraftConfig = new AircraftConfiguration(name, numCabinClass, totalSeatCapacity);
         aircraftConfig.setCabinClassConfigs(cabinClassConfigs);
         aircraftConfig.setAircraftType(aircraftType);
-        flightPlanningSessionBeanRemote.createAircraftConfig(aircraftConfig);
-        System.out.println("Aircraft config '" + aircraftConfig.getAircraftConfigName() + "' successfully created!\n");
+        try {
+            validatorSessionBeanRemote.validate(aircraftConfig);
+            flightPlanningSessionBeanRemote.createAircraftConfig(aircraftConfig);
+            System.out.println("Aircraft config '" + aircraftConfig.getAircraftConfigName() + "' successfully created!\n");
+        }
+        catch (AircraftConfigExistException | ViolationException ex) {
+            System.out.println("\nFollowing error(s) occurred: " + ex.getMessage() + "\n");
+        }
     }
     
     private void doViewAllAircraftConfigs() {
@@ -555,14 +600,18 @@ public class MainApp {
                 System.out.println();
                 
                 if (response == 1) {
+                    System.out.println("-----------------------------------------------------------");
                     System.out.println("Aircraft Configuration Name : " + ac.getAircraftConfigName());
                     System.out.println("Number of Cabin Classes : " + ac.getNumberOfCabinClass());
+                    System.out.println("Maximum Seat Capacity: " + ac.getMaximumSeatCapacity());
                     System.out.println();
                     
                     for (Integer i = 1; i <= ac.getNumberOfCabinClass(); i++) {
-                        System.out.println("Cabin Class " + i + " Details");
-                        System.out.println("Cabin Class Type : " + ac.getCabinClassConfigs().get(i-1).getCabinClass());
+                        System.out.println("- Cabin Class " + ac.getCabinClassConfigs().get(i-1).getCabinClass() + " Details -");
+                        System.out.println("Maximum Seat Capacity: " + ac.getCabinClassConfigs().get(i-1).getMaximumCapacity());
+                        System.out.println("Number of Aisles: " + ac.getCabinClassConfigs().get(i-1).getNumberOfAisles());
                         System.out.println("Number of Rows : " + ac.getCabinClassConfigs().get(i-1).getNumberOfRows());
+                        System.out.println("Number of Seats Abreast: " + ac.getCabinClassConfigs().get(i-1).getNumberOfSeatsAbreast());
                         
                         String seatConfig = "";
                         
@@ -632,8 +681,8 @@ public class MainApp {
             System.out.println("... Press enter to continue ...");
             scanner.nextLine();
         }
-        catch (AirportNotFoundException | FlightRouteAlreadyExistException ex) {
-            System.out.println("Following error occurred: " + ex.getMessage() + "\n");
+        catch (AirportNotFoundException | FlightRouteAlreadyExistException | ViolationException ex) {
+            System.out.println("\nFollowing error(s) occurred: " + ex.getMessage() + "\n");
         }
     }
     
@@ -696,7 +745,7 @@ public class MainApp {
         
         System.out.println("*** Create Flight ***\n");
         
-        System.out.print("Enter Flight Number: ");
+        System.out.print("Enter Flight Number Digits: ");
         Integer digits = scanner.nextInt();
         String flightNumber = "ML" + digits;
         scanner.nextLine();
@@ -783,8 +832,12 @@ public class MainApp {
             Flight newFlight = new Flight(flightNumber);
             newFlight.setFlightRoute(flightRoute);
             newFlight.setAircraftConfig(aircraftConfig);
+            
+            validatorSessionBeanRemote.validate(newFlight);
             newFlight = flightOperationSessionBeanRemote.createFlight(newFlight);
+            
             System.out.println("Flight " + newFlight.getFlightNumber() + " successfully created!");
+            
             if (flightRoute.getReturnFlightRoute() != null) {
                 System.out.println("Selected Flight Route has existing Return Flight Route.");
                 System.out.print("Create complementary return flight? (0 : No, 1 : Yes):  ");
@@ -810,8 +863,8 @@ public class MainApp {
                 }
             }
         }
-        catch (FlightAlreadyExistException ex) {
-            System.out.println("Following error occurred: " + ex.getMessage());
+        catch (FlightAlreadyExistException | ViolationException ex) {
+            System.out.println("\nFollowing error(s) occurred: " + ex.getMessage() + "\n");
         }
         
         System.out.println();
@@ -827,10 +880,16 @@ public class MainApp {
         
         for (Flight f : flights) {
             if (f.getEnabled() == true) { // check whether flight is disabled
-                System.out.println("Flight: " + f.getFlightNumber() + " " + f.getFlightRoute().getOriginAirport().getAirportCode() + "-" + f.getFlightRoute().getDestinationAirport().getAirportCode());
+                System.out.println(f.getFlightNumber() + " " + f.getFlightRoute().getOriginAirport().getAirportCode() + "-" + f.getFlightRoute().getDestinationAirport().getAirportCode() + " (" + f.getAircraftConfig().getAircraftConfigName() + ")");
                 if (f.getReturnFlight() != null) {
+                    /*
                     Flight rf = f.getReturnFlight();
                     System.out.println("\tReturn: " + rf.getFlightNumber() + " " + rf.getFlightRoute().getOriginAirport().getAirportCode() + "-" + rf.getFlightRoute().getDestinationAirport().getAirportCode());
+                    */
+                    
+                    System.out.print("\t");
+                } else {
+                    System.out.println();
                 }
             }
         }
@@ -858,7 +917,10 @@ public class MainApp {
             response = scanner.nextInt();
             scanner.nextLine();
             
-            if (response == 1) {
+            if (response == 0) {
+                //skip
+            }
+            else if (response == 1) {
                 System.out.println();
                 System.out.println("*** Flight Details (" + f.getFlightNumber() + ") ***\n");
                 
@@ -875,6 +937,17 @@ public class MainApp {
                     System.out.println();
                 }
                 
+                if (f.getFlightSchedules().isEmpty()) {
+                    System.out.println("... No available Flight Schedules ...");
+                }
+                else {
+                    System.out.println("-Available Flight Schedules-");
+                    for (FlightSchedule fs : f.getFlightSchedules()) {
+                        System.out.println(fs.getArrivalDateTime());
+                    }
+                }
+                
+                System.out.println();
                 response = 0;
                 
                 while (response < 1 || response > 3) {
@@ -892,12 +965,12 @@ public class MainApp {
                     else if (response == 2) {
                         doDeleteFlight(f);
                     }
-                    else if (response >= 3) {
+                    else {
                         break;
                     }
                 }
             }
-            if (response > 1) {
+            else {
                 break;
             }
         }
@@ -920,13 +993,16 @@ public class MainApp {
                 System.out.print(ac.getAircraftConfigName() + ": ");
                 response = scanner.nextInt();
                 scanner.nextLine();
-                if (response == 1) {
+                if (response == 0) {
+                    //skip
+                }
+                else if (response == 1) {
                     flight.setAircraftConfig(ac);
-                    flightOperationSessionBeanRemote.updateReturnAndFlight(flight);
+                    flightOperationSessionBeanRemote.updateFlight(flight);
                     System.out.println("Aircraft Configuration successfully updated to '" + ac.getAircraftConfigName() + "'!");
                     break;
                 }
-                else if (response > 1) {
+                else {
                     break;
                 }
             }
@@ -1150,6 +1226,8 @@ public class MainApp {
                     
                     flightSchedulePlan.setEnabled(Boolean.TRUE);
                     flightSchedulePlan.setStartDate();
+                    
+                    validatorSessionBeanRemote.validate(flightSchedulePlan);
                     flightSchedulePlan = flightOperationSessionBeanRemote.createFlightSchedulePlan(flightSchedulePlan);
                     
                     System.out.println("Flight Schedule Plan successfully created!\n");
@@ -1206,6 +1284,7 @@ public class MainApp {
                             returnFlightSchedulePlan.setEndDate(endDate.getTime());
                         }
                         
+                        validatorSessionBeanRemote.validate(returnFlightSchedulePlan);
                         returnFlightSchedulePlan = flightOperationSessionBeanRemote.createFlightSchedulePlan(returnFlightSchedulePlan);
                         
                         flightSchedulePlan.setReturnFlightSchedulePlan(returnFlightSchedulePlan);
@@ -1217,8 +1296,8 @@ public class MainApp {
                         break;
                     }
                 }
-                catch (FlightNumberDoesNotExistException | InvalidDateTimeException | FlightScheduleOverlapException | InvalidDurationException | FareBasisCodeExistException ex) {
-                    System.out.println("\nFollowing error occurred: " + ex.getMessage() + "\n");
+                catch (FlightNumberDoesNotExistException | InvalidDateTimeException | FlightScheduleOverlapException | InvalidDurationException | FareBasisCodeExistException | ViolationException ex) {
+                    System.out.println("\nFollowing error(s) occurred: " + ex.getMessage() + "\n");
                 }
             }
             
@@ -1265,6 +1344,7 @@ public class MainApp {
             */
             
             flightSchedule = flightOperationSessionBeanRemote.createFlightSchedule(flightSchedule); // catch FlightScheduleOverlapException
+            flightSchedule.setFlight(flight);
             
             List<CabinClassConfiguration> ccConfigs = flight.getAircraftConfig().getCabinClassConfigs();
             
@@ -1288,7 +1368,7 @@ public class MainApp {
         
         System.out.println("*** View All Flight Schedule Plans ***\n");
         
-        List<FlightSchedulePlan> flightSchedulePlans = flightOperationSessionBeanRemote.retrieveAllFlightSchedulePlans();
+        List<FlightSchedulePlan> flightSchedulePlans = flightOperationSessionBeanRemote.retrieveAllMainFlightSchedulePlans();
         
         if (flightSchedulePlans.isEmpty()) {
             System.out.println("... No Flight Schedule Plans available ...\n");
@@ -1313,7 +1393,7 @@ public class MainApp {
         System.out.println();
     }
     
-    private void doViewFlightScheduleDetails() {
+    private void doViewFlightSchedulePlanDetails() {
         Integer response = 0;
         System.out.println("*** View Flight Schedule Plan Details ***\n");
         
@@ -1321,8 +1401,19 @@ public class MainApp {
         
         for (FlightSchedulePlan fsp : flightSchedulePlans) {
             if (fsp.getEnabled() == true) {
+                FlightRoute flightRoute = fsp.getFlightSchedules().get(0).getFlight().getFlightRoute();
                 System.out.println("Flight Schedule Plan - " + fsp.getFlightNumber());
-                System.out.println("First departure date/time : " + fsp.getStartDate());
+                System.out.println("Origin-Destination : " + flightRoute.getOriginAirport().getAirportCode() + "-" + flightRoute.getDestinationAirport().getAirportCode());
+                
+                for (FlightSchedule fs : fsp.getFlightSchedules()) {
+                    System.out.println(fs.getDepartureDateTime() + " --> " + fs.getArrivalDateTime());
+                }
+                System.out.println();
+                
+                for (Fare f : fsp.getFares()) {
+                    System.out.println(f.getFareBasisCode() + ": " + f.getFareAmount());
+                }
+                
                 System.out.print("(0 : skip, 1 : select, other integer : exit) :");
                 
                 response = scanner.nextInt();
@@ -1365,12 +1456,44 @@ public class MainApp {
     }
     
     private void doUpdateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
-        // 
+        
+        System.out.println("*** Update Flight Schedule Plan ***\n");
+        
+        List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
+        List<Fare> fares = flightSchedulePlan.getFares();
+        
+        /*
+        for (FlightSchedule fs : flightSchedules) {
+            
+        }
+        */
+        
+        for (Fare f : fares) {
+            System.out.println("Fare " + f.getFareBasisCode());
+            System.out.print("Enter new fare amount: ");
+            BigDecimal newAmt = scanner.nextBigDecimal();
+            scanner.nextLine();
+            
+            if (newAmt.compareTo(new BigDecimal(0)) < 0) { // newAmt negative
+                System.out.println("\nFare Amount must be positive!\n");
+                break;
+            }
+            else {
+                f.setFareAmount(newAmt);
+                flightOperationSessionBeanRemote.updateFare(f);
+
+                System.out.println("Fare updated!\n");
+            }
+        }
+        
+        System.out.println("... Press enter to return ...");
+        scanner.nextLine();
+        System.out.println();
     }
     
     private void doDeleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
         
-        System.out.println("*** Delete Flight Schedule Plan ***");
+        System.out.println("*** Delete Flight Schedule Plan ***\n");
         
         List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
         
@@ -1408,36 +1531,42 @@ public class MainApp {
         
         try {
             Flight flight = flightOperationSessionBeanRemote.retrieveFlightByNumber(flightNumber);
-            System.out.println("Choose Flight Schedule (0 : skip, 1 : select, other integer : exit)");
             
-            for (int i = 0; i < flight.getFlightSchedules().size(); i++) {
-                FlightSchedule fs = flight.getFlightSchedules().get(i);
-                
-                System.out.print("Flight Schedule " + (i+1) + " - " + fs.getDepartureDateTime() + " : ");
-                response = scanner.nextInt();
-                scanner.nextLine();
-                System.out.println();
-                
-                if (response == 0) {
-                    //skip
-                }
-                else if (response == 1) {
-                    
-                    for (int j = 0; j < fs.getSeatInventories().size(); j++) {
-                        CabinClassConfiguration cc = flight.getAircraftConfig().getCabinClassConfigs().get(j);
-                        SeatInventory si = fs.getSeatInventories().get(j);
-                        
-                        System.out.println("Cabin Class - " + cc.getCabinClass());
-                        System.out.println("Available Seats : " + si.getAvailable());
-                        System.out.println("Reserved Seats : " + si.getReserved());
-                        System.out.println("Balance Seats : " + si.getBalance());
-                        
-                        System.out.println();
+            if (flight.getFlightSchedules().isEmpty()) {
+                System.out.println("... No Flight Schedules available ...\n");
+            }
+            else {
+                System.out.println("Choose Flight Schedule (0 : skip, 1 : select, other integer : exit)");
+
+                for (int i = 0; i < flight.getFlightSchedules().size(); i++) {
+                    FlightSchedule fs = flight.getFlightSchedules().get(i);
+
+                    System.out.print("Flight Schedule " + (i+1) + " - " + fs.getDepartureDateTime() + " : ");
+                    response = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println();
+
+                    if (response == 0) {
+                        //skip
                     }
-                    
-                }
-                else {
-                    break;
+                    else if (response == 1) {
+
+                        for (int j = 0; j < fs.getSeatInventories().size(); j++) {
+                            CabinClassConfiguration cc = flight.getAircraftConfig().getCabinClassConfigs().get(j);
+                            SeatInventory si = fs.getSeatInventories().get(j);
+
+                            System.out.println("Cabin Class - " + cc.getCabinClass());
+                            System.out.println("Available Seats : " + si.getAvailable());
+                            System.out.println("Reserved Seats : " + si.getReserved());
+                            System.out.println("Balance Seats : " + si.getBalance());
+
+                            System.out.println();
+                        }
+
+                    }
+                    else {
+                        break;
+                    }
                 }
             }
         }
@@ -1450,56 +1579,64 @@ public class MainApp {
         scanner.nextLine();
         System.out.println();
     }
+    
     private void doViewFlightReservations() {
         Integer response = 0;
         System.out.println("*** View Flight Reservations ***\n");
         
         System.out.println("Enter Flight Number: ");
         String flightNumber = scanner.nextLine().trim();
+        System.out.println();
         
         try {
             Flight flight = flightOperationSessionBeanRemote.retrieveFlightByNumber(flightNumber);
-            System.out.println("Choose Flight Schedule (0 : skip, 1 : select, other integer : exit)");
             
-            for (int i = 0; i < flight.getFlightSchedules().size(); i++) {
-                FlightSchedule fs = flight.getFlightSchedules().get(i);
-                
-                System.out.print("Flight Schedule " + (i+1) + " - " + fs.getDepartureDateTime() + " : ");
-                response = scanner.nextInt();
-                scanner.nextLine();
-                System.out.println();
-                
-                if (response == 0) {
-                    //skip
-                }
-                else if (response == 1) {
-                    
-                    if (fs.getFlightReservations().isEmpty()) {
-                        System.out.println("... No Existing Flight Reservations ...\n");
+            if (flight.getFlightSchedules().isEmpty()) {
+                System.out.println("... No Flight Schedules available ...\n");
+            }
+            else {
+                System.out.println("Choose Flight Schedule (0 : skip, 1 : select, other integer : exit)");
+
+                for (int i = 0; i < flight.getFlightSchedules().size(); i++) {
+                    FlightSchedule fs = flight.getFlightSchedules().get(i);
+
+                    System.out.print("Flight Schedule " + (i+1) + " - " + fs.getDepartureDateTime() + " : ");
+                    response = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println();
+
+                    if (response == 0) {
+                        //skip
+                    }
+                    else if (response == 1) {
+
+                        if (fs.getFlightReservations().isEmpty()) {
+                            System.out.println("... No Existing Flight Reservations ...\n");
+                            break;
+                        }
+
+                        for (int j = 0; j < flight.getAircraftConfig().getCabinClassConfigs().size(); j++) {
+                            CabinClassConfiguration cc = flight.getAircraftConfig().getCabinClassConfigs().get(j);
+
+                            List<FlightReservation> flightReservations = flightOperationSessionBeanRemote.retrieveFlightReservationsByCabinClass(cc);
+
+                            if (!flightReservations.isEmpty()) {
+                                System.out.println("Cabin Class - " + cc.getCabinClass());
+
+                                for (FlightReservation fr : flightReservations) {
+                                    System.out.println("Seat Number: " + fr.getSeatNumber());
+                                    System.out.println("Passenger name: " + fr.getCustomer().getFirstName() + " " + fr.getCustomer().getLastName());
+                                    System.out.println("Flight Basis Code: " + fs.getFlightSchedulePlan().getFares().get(j));
+                                }
+
+                            }
+                            System.out.println();
+                        }
+
+                    }
+                    else {
                         break;
                     }
-                    
-                    for (int j = 0; j < flight.getAircraftConfig().getCabinClassConfigs().size(); j++) {
-                        CabinClassConfiguration cc = flight.getAircraftConfig().getCabinClassConfigs().get(j);
-                        
-                        List<FlightReservation> flightReservations = flightOperationSessionBeanRemote.retrieveFlightReservationsByCabinClass(cc);
-                        
-                        if (!flightReservations.isEmpty()) {
-                            System.out.println("Cabin Class - " + cc.getCabinClass());
-                            
-                            for (FlightReservation fr : flightReservations) {
-                                System.out.println("Seat Number: " + fr.getSeatNumber());
-                                System.out.println("Passenger name: " + fr.getCustomer().getFirstName() + " " + fr.getCustomer().getLastName());
-                                System.out.println("Flight Basis Code: " + fs.getFlightSchedulePlan().getFares().get(j));
-                            }
-                            
-                        }
-                        System.out.println();
-                    }
-                    
-                }
-                else {
-                    break;
                 }
             }
         }

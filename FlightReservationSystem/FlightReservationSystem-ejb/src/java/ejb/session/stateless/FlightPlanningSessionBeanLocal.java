@@ -11,9 +11,11 @@ import entity.Airport;
 import entity.FlightRoute;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.AircraftConfigExistException;
 import util.exception.AirportNotFoundException;
 import util.exception.FlightRouteAlreadyExistException;
 import util.exception.FlightRouteNotFoundException;
+import util.exception.ViolationException;
 
 /**
  *
@@ -24,13 +26,13 @@ public interface FlightPlanningSessionBeanLocal {
 
     List<AircraftType> retrieveAllAircraftTypes();
 
-    void createAircraftConfig(AircraftConfiguration newAircraftConfig);
+    void createAircraftConfig(AircraftConfiguration newAircraftConfig) throws AircraftConfigExistException;
 
     List<AircraftConfiguration> retrieveAllAircraftConfigs();
 
     Airport retrieveAirportByCode(String airportCode) throws AirportNotFoundException;
 
-    FlightRoute createFlightRoute(Airport originAirport, Airport destinationAirport) throws FlightRouteAlreadyExistException;
+    FlightRoute createFlightRoute(Airport originAirport, Airport destinationAirport) throws FlightRouteAlreadyExistException, ViolationException;
 
     void updateFlightRoute(FlightRoute flightRoute);
 
