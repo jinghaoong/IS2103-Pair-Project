@@ -15,6 +15,8 @@ import entity.FlightSchedule;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import static java.util.Calendar.DATE;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -120,12 +122,12 @@ public class MainApp {
         }
     }
     
-    public Flight searchFlight() {
+    public FlightSchedule searchFlight() {
         
         Scanner sc = new Scanner(System.in);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         
-        System.out.println("*** Search for Flight ***\n");
+        System.out.println("*** Searching Flights ***\n");
         System.out.print("Select Trip Type (1 for one-way, 2 for return): ");
         int tripType = sc.nextInt();
         sc.nextLine();
@@ -144,63 +146,333 @@ public class MainApp {
         try {
             departureDate = dateFormat.parse(departure);
         } catch (ParseException ex){
-            System.out.println("Please follow the given format \"YYYY-MM-DD\"");
+            System.out.println("Please follow the given format \"YYYY-MM-DD\".");
         }
         
         String returnDeparture = "";
         Date returnDepartureDate = new Date();
         if (tripType == 2) {
-            System.out.println("Return Departure Date (YYYY-MM-DD): ");
+            System.out.print("Return Departure Date (YYYY-MM-DD): ");
             returnDeparture = sc.nextLine().trim();
             try {
-                returnDepartureDate = dateFormat.parse(departure);
+                returnDepartureDate = dateFormat.parse(returnDeparture);
             } catch (ParseException ex){
-                System.out.println("Please follow the given format \"YYYY-MM-DD\"");
+                System.out.println("Please follow the given format \"YYYY-MM-DD\".");
             }
         }
         
-        System.out.print("Do you prefer a direct flight (1) or connecting flight (2)?: ");
+        System.out.print("Direct Flight (1) or Connecting Flight (2)?: ");
         int directOrConnecting = sc.nextInt();
         sc.nextLine();
         System.out.println("Please select a cabin class.");
-        System.out.print("First Class (F), Business (J), Premium Economy (W), Economy (Y), No Preference (N): ");
+        System.out.print("First Class (F), Business (J), Premium Economy (W), Economy (Y), No Preference (Any other letter): ");
         String cabinClass = sc.nextLine().trim();
         
-        List<Flight> directFlights = new ArrayList<>();
-        List<List<Flight>> connectingFlights = new ArrayList<>();
+        List<FlightSchedule> directFlights = new ArrayList<>();
+        List<FlightSchedule> resultList = new ArrayList<>();
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:ss");
 
+        
+        Calendar departureDateWithDifference = Calendar.getInstance();
+        Date dDate = new Date();
+        int counter = 1;
+        
         if (directOrConnecting == 1) { // direct
-            directFlights = customerSessionBeanRemote.makeDirectSearch(departureAirport, destinationAirport, 
-                departureDate, numOfPassengers, cabinClass);
+            System.out.println("\n Direct Flights from " + departureAirport + " Airport to " + destinationAirport + " Airport for " + numOfPassengers + " passenger(s)\n");
+            directFlights = customerSessionBeanRemote.makeDirectSearch(departureAirport, destinationAirport, departureDate, numOfPassengers, cabinClass);
+            // sort directFlights
             
+            // minus3
+            departureDateWithDifference.setTime(departureDate);
+            departureDateWithDifference.add(DATE, -3);
+            dDate = departureDateWithDifference.getTime();
+            resultList = customerSessionBeanRemote.makeDirectSearch(departureAirport, destinationAirport, dDate, numOfPassengers, cabinClass);
+            // sort resultList
+            for (FlightSchedule fs : resultList) {
+                directFlights.add(fs);
+            }
+            
+            // minus2
+            departureDateWithDifference.setTime(departureDate);
+            departureDateWithDifference.add(DATE, -2);
+            dDate = departureDateWithDifference.getTime();
+            resultList = customerSessionBeanRemote.makeDirectSearch(departureAirport, destinationAirport, dDate, numOfPassengers, cabinClass);
+            // sort resultList
+            for (FlightSchedule fs : resultList) {
+                directFlights.add(fs);
+            }
+            
+            // minus1
+            departureDateWithDifference.setTime(departureDate);
+            departureDateWithDifference.add(DATE, -1);
+            dDate = departureDateWithDifference.getTime();
+            resultList = customerSessionBeanRemote.makeDirectSearch(departureAirport, destinationAirport, dDate, numOfPassengers, cabinClass);
+            // sort resultList
+            for (FlightSchedule fs : resultList) {
+                directFlights.add(fs);
+            }
+            
+            // plus1
+            departureDateWithDifference.setTime(departureDate);
+            departureDateWithDifference.add(DATE, 1);
+            dDate = departureDateWithDifference.getTime();
+            resultList = customerSessionBeanRemote.makeDirectSearch(departureAirport, destinationAirport, dDate, numOfPassengers, cabinClass);
+            // sort resultList
+            for (FlightSchedule fs : resultList) {
+                directFlights.add(fs);
+            }
+            
+            // plus2
+            departureDateWithDifference.setTime(departureDate);
+            departureDateWithDifference.add(DATE, 2);
+            dDate = departureDateWithDifference.getTime();
+            resultList = customerSessionBeanRemote.makeDirectSearch(departureAirport, destinationAirport, dDate, numOfPassengers, cabinClass);
+            // sort resultList
+            for (FlightSchedule fs : resultList) {
+                directFlights.add(fs);
+            }
+            
+            // plus3
+            departureDateWithDifference.setTime(departureDate);
+            departureDateWithDifference.add(DATE, 3);
+            dDate = departureDateWithDifference.getTime();
+            resultList = customerSessionBeanRemote.makeDirectSearch(departureAirport, destinationAirport, dDate, numOfPassengers, cabinClass);
+            // sort resultList
+            for (FlightSchedule fs : resultList) {
+                directFlights.add(fs);
+            }
+            
+            // print results
+            if (directFlights.isEmpty()) {
+                System.out.println("There are no available flights for the criteria given, please try again.\n");
+            } else {
+                for (FlightSchedule fs : directFlights) {
+                Flight flight = fs.getFlight();
+                System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDate()) + "\t" + flight.getFlightNumber() + "\tEconomy\t" + " Total Fare: $");
+                counter++;
+                }
+            }
+            counter = 1;
+            System.out.println();
         }
         
+        List<FlightSchedule> connectingFlights = new ArrayList<>();
         if (directOrConnecting == 2) { // connecting
+            System.out.print("How many transits? (maximum 2): ");
+            int numOfTransits = sc.nextInt();
+            sc.nextLine();
+            System.out.println();
+            
+            
+            int count = 1;
+            int selection = 0;
+            
+            if (numOfTransits == 1) {
+                System.out.print("Enter name of Transit 1 airport: ");
+                String transit1AirportName = sc.nextLine().trim();
+                resultList = customerSessionBeanRemote.makeDirectSearch(departureAirport, transit1AirportName, 
+                    departureDate, numOfPassengers, cabinClass);
+                System.out.println("Flights from " + departureAirport + " Airport to " + transit1AirportName + " Airport for " + numOfPassengers + " Passenger(s)\n");
+                for (FlightSchedule fs : resultList) {
+                    Flight flight = fs.getFlight();
+                    System.out.println("" + count + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\tCabinClass\tTotal Fare: $");
+                }
+                System.out.print("Select a flight from above (number): ");
+                selection = sc.nextInt();
+                sc.nextLine();
+                FlightSchedule flight1 = resultList.get(selection-1);
+                Date flight1ArrivalDate = flight1.getArrivalDateTime();
+                
+                counter = 1;
+                connectingFlights.add(flight1);
+                
+                resultList = customerSessionBeanRemote.makeConnectingSearch(transit1AirportName, destinationAirport,
+                    flight1ArrivalDate, numOfPassengers, cabinClass);
+                System.out.println("Flights from " + transit1AirportName + " Airport to " + destinationAirport + " Airport for " + numOfPassengers + " Passenger(s)\n");
+                for (FlightSchedule fs : resultList) {
+                    Flight flight = fs.getFlight();
+                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\tCabinClass\tTotal Fare: $");
+                }
+                System.out.print("Select a flight from above (number): ");
+                selection = sc.nextInt();
+                sc.nextLine();
+                FlightSchedule flight2 = resultList.get(selection-1);
+                
+                counter = 1;
+                connectingFlights.add(flight2);
+            } // end
+            
+            
+            if (numOfTransits == 2) { // 2 transits
+                System.out.print("Enter name of Transit 1 airport: ");
+                String transit1AirportName = sc.nextLine().trim();
+                resultList = customerSessionBeanRemote.makeDirectSearch(departureAirport, transit1AirportName, 
+                    departureDate, numOfPassengers, cabinClass);
+                System.out.println("Flights from " + departureAirport + " Airport to " + transit1AirportName + " Airport for " + numOfPassengers + " Passenger(s)\n");
+                for (FlightSchedule fs : resultList) {
+                    Flight flight = fs.getFlight();
+                    System.out.println("" + count + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\tCabinClass\tTotal Fare: $");
+                }
+                System.out.print("Select a flight from above (number): ");
+                selection = sc.nextInt();
+                sc.nextLine();
+                FlightSchedule flight1 = resultList.get(selection-1);
+                Date flight1ArrivalDate = flight1.getArrivalDateTime();
+                
+                counter = 1;
+                connectingFlights.add(flight1);
+                
+                System.out.print("Enter name of Transit 2 airport: ");
+                String transit2AirportName = sc.nextLine().trim();
+                resultList = customerSessionBeanRemote.makeConnectingSearch(transit1AirportName, transit2AirportName,
+                    flight1ArrivalDate, numOfPassengers, cabinClass);
+                System.out.println("Flights from " + transit1AirportName + " Airport to " + transit2AirportName + " Airport for " + numOfPassengers + " Passenger(s)\n");
+                for (FlightSchedule fs : resultList) {
+                    Flight flight = fs.getFlight();
+                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\tCabinClass\tTotal Fare: $");
+                }
+                System.out.print("Select a flight from above (number): ");
+                selection = sc.nextInt();
+                sc.nextLine();
+                FlightSchedule flight2 = resultList.get(selection-1);
+                Date flight2ArrivalDate = flight2.getArrivalDateTime();
+                
+                counter = 1;
+                connectingFlights.add(flight2);
+                
+                resultList = customerSessionBeanRemote.makeConnectingSearch(transit2AirportName, destinationAirport,
+                    flight2ArrivalDate, numOfPassengers, cabinClass);
+                System.out.println("Flights from " + transit2AirportName + " Airport to " + destinationAirport + " Airport for " + numOfPassengers + " Passenger(s)\n");
+                for (FlightSchedule fs : resultList) {
+                    Flight flight = fs.getFlight();
+                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\tCabinClass\tTotal Fare: $");
+                }
+                System.out.print("Select a flight from above (number): ");
+                selection = sc.nextInt();
+                sc.nextLine();
+                FlightSchedule flight3 = resultList.get(selection-1);
+                
+                counter = 1;
+                connectingFlights.add(flight3);
+                
+            }
+            
+            
             connectingFlights = customerSessionBeanRemote.makeConnectingSearch(departureAirport, destinationAirport, 
                 departureDate, numOfPassengers, cabinClass);
+            
+            for (FlightSchedule fs : connectingFlights) {
+                System.out.print("" + counter + ": ");
+
+                Flight flight = fs.getFlight();
+                String originAirportCode = flight.getFlightRoute().getOriginAirport().getAirportCode();
+                String destinationAirportCode = flight.getFlightRoute().getDestinationAirport().getAirportCode();
+                System.out.println("\t" + dateTimeFormat.format(fs.getDepartureDate()) + "\t" + flight.getFlightNumber() + "\t" + originAirportCode + "-" + destinationAirportCode + "\tEconomy\tTotal Fare : $");
+
+            }
+            
+            
         }
         
         if (tripType == 2) { // return flight
-            if (directOrConnecting == 1) {
-                directFlights = customerSessionBeanRemote.makeDirectSearch(destinationAirport, departureAirport, 
+            List<FlightSchedule> returnDirectFlights = new ArrayList<>();
+            List<FlightSchedule> returnResultList = new ArrayList<>();
+            
+            Calendar returnDepartureWithDifference = Calendar.getInstance();
+            Date rdDate = new Date();
+            
+            System.out.println("\n Returning Flights from " + destinationAirport + " Airport to " + departureAirport + " Airport for " + numOfPassengers + " passenger(s)\n");
+            
+            if (directOrConnecting == 1) { // direct            
+                returnDirectFlights = customerSessionBeanRemote.makeDirectSearch(destinationAirport, departureAirport, returnDepartureDate, numOfPassengers, cabinClass);
+                // sort returnDirectFlights
+
+                // minus3
+                returnDepartureWithDifference.setTime(departureDate);
+                returnDepartureWithDifference.add(DATE, -3);
+                rdDate = departureDateWithDifference.getTime();
+                returnResultList = customerSessionBeanRemote.makeDirectSearch(destinationAirport, departureAirport, dDate, numOfPassengers, cabinClass);
+                // sort returnResultList
+                for (FlightSchedule fs : returnResultList) {
+                    returnDirectFlights.add(fs);
+                }
+
+                // minus2
+                returnDepartureWithDifference.setTime(departureDate);
+                returnDepartureWithDifference.add(DATE, -2);
+                rdDate = departureDateWithDifference.getTime();
+                returnResultList = customerSessionBeanRemote.makeDirectSearch(destinationAirport, departureAirport, dDate, numOfPassengers, cabinClass);
+                // sort returnResultList
+                for (FlightSchedule fs : returnResultList) {
+                    returnDirectFlights.add(fs);
+                }
+
+                // minus1
+                returnDepartureWithDifference.setTime(departureDate);
+                returnDepartureWithDifference.add(DATE, -1);
+                rdDate = departureDateWithDifference.getTime();
+                returnResultList = customerSessionBeanRemote.makeDirectSearch(destinationAirport, departureAirport, dDate, numOfPassengers, cabinClass);
+                // sort returnResultList
+                for (FlightSchedule fs : returnResultList) {
+                    returnDirectFlights.add(fs);
+                }
+
+                // plus1
+                returnDepartureWithDifference.setTime(departureDate);
+                returnDepartureWithDifference.add(DATE, 1);
+                rdDate = departureDateWithDifference.getTime();
+                returnResultList = customerSessionBeanRemote.makeDirectSearch(destinationAirport, departureAirport, dDate, numOfPassengers, cabinClass);
+                // sort returnResultList
+                for (FlightSchedule fs : returnResultList) {
+                    returnDirectFlights.add(fs);
+                }
+
+                // plus2
+                returnDepartureWithDifference.setTime(departureDate);
+                returnDepartureWithDifference.add(DATE, 2);
+                rdDate = departureDateWithDifference.getTime();
+                returnResultList = customerSessionBeanRemote.makeDirectSearch(destinationAirport, departureAirport, dDate, numOfPassengers, cabinClass);
+                // sort returnResultList
+                for (FlightSchedule fs : returnResultList) {
+                    returnDirectFlights.add(fs);
+                }
+
+                // plus3
+                returnDepartureWithDifference.setTime(departureDate);
+                returnDepartureWithDifference.add(DATE, 3);
+                rdDate = departureDateWithDifference.getTime();
+                returnResultList = customerSessionBeanRemote.makeDirectSearch(destinationAirport, departureAirport, dDate, numOfPassengers, cabinClass);
+                // sort returnResultList
+                for (FlightSchedule fs : returnResultList) {
+                    returnDirectFlights.add(fs);
+                }
+
+                // print results
+                if (returnDirectFlights.isEmpty()) {
+                    System.out.println("There are no available flights for the criteria given, please try again.\n");
+                } else {
+                    for (FlightSchedule fs : directFlights) {
+                    Flight flight = fs.getFlight();
+                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDate()) + "\t" + flight.getFlightNumber() + "\tEconomy\t" + " Total Fare: $");
+                    counter++;
+                    }
+                }
+                counter = 1;
+                }
+
+            if (directOrConnecting == 2) { // connecting
+                connectingFlights = customerSessionBeanRemote.makeConnectingSearch(destinationAirport, departureAirport, 
                     returnDepartureDate, numOfPassengers, cabinClass);
-            
-            }
-            
-            if (directOrConnecting == 2) {
-            connectingFlights = customerSessionBeanRemote.makeConnectingSearch(destinationAirport, departureAirport, 
-                returnDepartureDate, numOfPassengers, cabinClass);
-            
+
             }
         }
         
         
-        
         if (loggedInCustomer == null) {
-            return new Flight(); //
+            return new FlightSchedule(); //
         } else {
             System.out.print("Select a Flight Number");
-            return new Flight();
+            return new FlightSchedule();
         }
     }
 
