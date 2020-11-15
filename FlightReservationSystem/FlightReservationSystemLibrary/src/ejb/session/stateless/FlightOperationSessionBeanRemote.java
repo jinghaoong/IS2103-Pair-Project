@@ -55,4 +55,6 @@ public interface FlightOperationSessionBeanRemote {
 
     List<FlightReservation> retrieveFlightReservationsByCabinClass(CabinClassConfiguration cabinClass);
 
+    void deleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan);
+
 }

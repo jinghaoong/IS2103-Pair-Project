@@ -171,7 +171,7 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
         
         for (FlightSchedule fs : flightSchedules) {
             if (flightSchedule.getDepartureDateTime().before(fs.getArrivalDateTime()) || flightSchedule.getArrivalDateTime().before(fs.getDepartureDateTime())) {
-                System.out.println(fs.getDepartureDateTime().toString());
+                //System.out.println(fs.getDepartureDateTime().toString());
                 throw new FlightScheduleOverlapException("Flight Schedules for same Flight overlap!");
             }
         }
@@ -274,6 +274,10 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
             fsp.getReturnFlightSchedulePlan();
             fsp.getFlightSchedules().size();
             fsp.getFares().size();
+            
+            for (FlightSchedule fs : fsp.getFlightSchedules()) {
+                fs.getFlightReservations().size();
+            }
         }
         
         flightSchedulePlans.sort((FlightSchedulePlan fsp1, FlightSchedulePlan fsp2) -> fsp1.getStartDate().compareTo(fsp2.getStartDate()));
@@ -296,6 +300,14 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
         }
         
         return flightReservations;
+    }
+
+    @Override
+    public void deleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        
+        FlightSchedulePlan fsp = em.find(FlightSchedulePlan.class, flightSchedulePlan.getFlightSchedulePlanId());
+        
+        em.remove(fsp);
     }
     
 }
