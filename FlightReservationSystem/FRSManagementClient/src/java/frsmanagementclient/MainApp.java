@@ -1260,6 +1260,13 @@ public class MainApp {
                             returnFlightSchedule.setEstimatedFlightDurationMinute(fs.getEstimatedFlightDurationMinute());
                             returnFlightSchedule.computeAndSetArrivalDateTime();
                             
+                            List<CabinClassConfiguration> ccConfigs = returnFlight.getAircraftConfig().getCabinClassConfigs();
+            
+                            for (CabinClassConfiguration cc : ccConfigs) {
+                                SeatInventory seatInventory = new SeatInventory(cc.getNumSeats());
+                                returnFlightSchedule.getSeatInventories().add(seatInventory);
+                            }
+                            
                             returnFlightSchedule.setFlightSchedulePlan(returnFlightSchedulePlan);
                             returnFlightSchedulePlan.getFlightSchedules().add(returnFlightSchedule);
                         }

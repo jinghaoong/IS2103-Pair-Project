@@ -126,6 +126,7 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
             
             for (FlightSchedule fs : flight.getFlightSchedules()) {
                 fs.getSeatInventories().size();
+                fs.getFlightReservations().size();
             }
             
             flight.getAircraftConfig().getCabinClassConfigs().size();
