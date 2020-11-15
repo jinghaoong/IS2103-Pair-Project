@@ -13,6 +13,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -27,18 +30,31 @@ public class Customer implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
     @Column(nullable = false, length = 32)
+    @NotNull
+    @NotBlank
     private String firstName;
     @Column(nullable = false, length = 32)
+    @NotBlank
     private String lastName;
     @Column(nullable = false, length = 64, unique = true)
+    @NotNull
+    @Email
     private String email;
     @Column(nullable = false, length = 16, unique = true)
+    @NotNull
+    @NotBlank
     private String mobileNumber;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @NotBlank
     private String address;
     @Column(nullable = false, length = 32, unique = true)
+    @NotNull
+    @NotBlank
     private String username;
     @Column(nullable = false, length = 32)
+    @NotNull
+    @NotBlank
     private String password;
     
     @OneToMany(mappedBy = "customer")

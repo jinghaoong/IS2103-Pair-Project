@@ -23,6 +23,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
         
 /**
@@ -39,16 +42,23 @@ public class FlightSchedule implements Serializable {
     private Long flightScheduleId;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
+    @NotNull
     private Date departureDateTime;
     @Column(nullable = false, length = 2)
+    @NotNull
+    @PositiveOrZero
     private Integer estimatedFlightDurationHour;
     @Column(nullable = false, length = 2)
+    @NotNull
+    @Positive
     private Integer estimatedFlightDurationMinute;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
+    @NotNull
     private Date arrivalDateTime;
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
+    @NotNull
     private Date departureDate;
     
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
@@ -73,7 +83,7 @@ public class FlightSchedule implements Serializable {
     public FlightSchedule(Date departureDateTime, Integer estimatedFlightDurationHour, Integer estimatedFlightDurationMinute) {
         this();
         this.departureDateTime = departureDateTime;
-        this.setDepartureDate(departureDateTime);
+        this.setDepartureDateTime(departureDateTime);
         this.estimatedFlightDurationHour = estimatedFlightDurationHour;
         this.estimatedFlightDurationMinute = estimatedFlightDurationMinute;
     }

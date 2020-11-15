@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -32,9 +33,11 @@ public class Flight implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightId;
     @Column(nullable = false, length = 16, unique = true)
+    @NotNull
     @Size(min = 3, max = 16, message = "Flight Number has to be between 3 to 16 characters!")
     private String flightNumber;
     @Column(nullable = false)
+    @NotNull
     private Boolean enabled;
     
     @ManyToOne(optional = false)

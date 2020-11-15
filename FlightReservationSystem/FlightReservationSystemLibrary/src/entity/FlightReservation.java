@@ -13,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -27,6 +29,8 @@ public class FlightReservation implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightReservationId;
     @Column(nullable = false, length = 3)
+    @NotNull
+    @NotBlank
     private String seatNumber;
     
     @ManyToOne(optional = false)

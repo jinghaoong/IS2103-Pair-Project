@@ -18,8 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 /**
@@ -36,7 +36,8 @@ public class AircraftConfiguration implements Serializable {
     private Long aircraftConfigId;
     @Column(nullable = false, length = 64, unique = true)
     @NotNull
-    @Size(min = 1, max = 64, message = "Aircraft Configuration name has to be between 1 - 64 characters!")
+    @NotBlank
+    @Size(max = 64, message = "Aircraft Configuration name has maximum 64 characters!")
     private String aircraftConfigName;
     @Column(nullable = false)
     @NotNull
@@ -44,7 +45,8 @@ public class AircraftConfiguration implements Serializable {
     @Max(value = 4, message = "Maximum number of Cabin Classes is 4!")
     private Integer numberOfCabinClass;
     @Column(nullable = false)
-    @Positive
+    @NotNull 
+    // No Positive bean validator here as max capacity is calculated from numberOfCabinClass
     private Integer maximumSeatCapacity;
     
     @OneToMany(mappedBy = "aircraftConfig")

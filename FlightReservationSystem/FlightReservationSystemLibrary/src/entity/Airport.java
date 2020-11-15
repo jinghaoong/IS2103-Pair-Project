@@ -14,6 +14,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -28,16 +31,31 @@ public class Airport implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long airportId;
     @Column(nullable = false, length = 64, unique = true)
+    @NotNull 
+    @NotBlank
+    @Size(max = 64, message = "Airport name has a maximum of 64 characters!")
     private String airportName;
     @Column(nullable = false, length = 3, unique = true)
+    @NotNull
+    @Size(min = 3, max = 3, message = "Airport IATA codes are exactly 3 characters long.")
     private String airportCode;
     @Column(nullable = false, length = 32)
+    @NotNull
+    @NotBlank
+    @Size(max = 32, message = "City name has a maximmum of 32 characters!")
     private String city;
     @Column(nullable = false, length = 32)
+    @NotNull
+    @NotBlank
+    @Size(max = 32, message = "State/Province name has a maximum of 32 characters!")
     private String stateProvince;
     @Column(nullable = false, length = 32)
+    @NotNull
+    @NotBlank
+    @Size(max = 32, message = "Country name has a maximum of 32 characters!")
     private String country;
     @Column(nullable = false)
+    @NotNull()
     private Integer timeZone;
     
     @OneToMany(mappedBy = "originAirport")

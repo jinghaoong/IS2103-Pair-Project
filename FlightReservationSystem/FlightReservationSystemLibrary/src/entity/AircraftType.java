@@ -14,6 +14,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -28,8 +32,13 @@ public class AircraftType implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aircraftTypeId;
     @Column(nullable = false, length = 32)
+    @NotNull
+    @NotBlank
+    @Size(max = 32, message = "Aircraft Type name has a maxmimum of 32 characters!")
     private String aircraftTypeName;
     @Column(nullable = false)
+    @NotNull
+    @Positive
     private Integer maximumPassengerCapacity;
     
     @OneToMany(mappedBy = "aircraftType")

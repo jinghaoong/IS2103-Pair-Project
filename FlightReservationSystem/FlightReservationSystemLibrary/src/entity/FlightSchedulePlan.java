@@ -22,6 +22,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 import util.enumeration.FlightScheduleType;
 
 /**
@@ -37,20 +43,28 @@ public class FlightSchedulePlan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightSchedulePlanId;
     @Column(nullable = false, length = 16)
+    @NotNull
+    @Size(min = 3, max = 16, message = "Flight Number has to be between 3 to 16 characters!")
     private String flightNumber;
     @Enumerated(EnumType.STRING)
     private FlightScheduleType flightScheduleType;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
+    @NotNull
     private Date startDate;
     @Column(nullable = true)
+    @Positive
     private Integer nDay; // for recurrent every n day
     @Column(nullable = true)
+    @PositiveOrZero
+    @Min(value = 0, message = "Day of week is 0-based, minimum value is 0!")
+    @Max(value = 6, message = "Day of week is 0-based, maximum value is 6!")
     private Integer dayOfWeek; // for recurrent weekly (Sun: 0, .... Sat: 6)
     @Temporal(TemporalType.DATE)
     @Column(nullable = true)
     private Date endDate;
     @Column(nullable = false)
+    @NotNull
     private Boolean enabled;
     
     @OneToMany(mappedBy = "flightSchedulePlan", cascade = CascadeType.ALL)

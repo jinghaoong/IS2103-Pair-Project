@@ -6,8 +6,6 @@
 package entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,9 +15,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import util.enumeration.CabinClass;
 
 /**
@@ -37,16 +36,24 @@ public class CabinClassConfiguration implements Serializable {
     @Enumerated(EnumType.STRING)
     private CabinClass cabinClass;
     @Column(nullable = false)
+    @NotNull
     @Min(value = 0)
     @Max(value = 2, message = "Maximum number of aisles is 2")
     private Integer numberOfAisles;
     @Column(nullable = false)
+    @NotNull
+    @Positive
     private Integer numberOfRows;
     @Column(nullable = false)
+    @NotNull
+    @Positive
     private Integer numberOfSeatsAbreast;
     @Column(nullable = false)
+    @NotNull
     private Integer[] seatingConfig; // e.g. 3-4-3, 3-3
     @Column(nullable = false)
+    @NotNull
+    @Positive
     private Integer maximumCapacity;
     
     @ManyToOne(optional = false)

@@ -11,6 +11,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  *
@@ -25,8 +27,12 @@ public class SeatInventory implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seatInventoryId;
     @Column(nullable = false)
+    @NotNull
+    @PositiveOrZero
     private Integer available;
     @Column(nullable = false)
+    @NotNull
+    @PositiveOrZero
     private Integer reserved;
     
     public SeatInventory() {
