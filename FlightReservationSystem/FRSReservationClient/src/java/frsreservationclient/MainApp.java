@@ -8,10 +8,12 @@ package frsreservationclient;
 import ejb.session.stateless.CustomerSessionBeanRemote;
 import entity.Airport;
 import entity.Customer;
+import entity.Fare;
 import entity.Flight;
 import entity.FlightReservation;
 import entity.FlightRoute;
 import entity.FlightSchedule;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -170,7 +172,7 @@ public class MainApp {
         
         List<FlightSchedule> directFlights = new ArrayList<>();
         List<FlightSchedule> resultList = new ArrayList<>();
-        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         
         Calendar departureDateWithDifference = Calendar.getInstance();
@@ -247,9 +249,25 @@ public class MainApp {
                 System.out.println("There are no available flights for the criteria given, please try again.\n");
             } else {
                 for (FlightSchedule fs : directFlights) {
-                Flight flight = fs.getFlight();
-                System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDate()) + "\t" + flight.getFlightNumber() + "\tEconomy\t" + " Total Fare: $");
-                counter++;
+                    Flight flight = fs.getFlight();
+                    Fare fare = null;
+                    List<Fare> fares = fs.getFlightSchedulePlan().getFares();
+                    List<Fare> filteredFares = new ArrayList<>();
+                    for (Fare f : fares) {
+                        if (f.getCabinClassConfig().getCabinClass().equals(cabinClass)) { // preference
+                           filteredFares.add(f);
+                        }
+                    }
+                    if (filteredFares.isEmpty()) {
+                        fares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = fares.get(0);
+                    } else {
+                        filteredFares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = filteredFares.get(0);
+                    }
+                    BigDecimal totalFareAmount = fare.getFareAmount().multiply(new BigDecimal(numOfPassengers));
+                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\t" + fare.getCabinClassConfig().getCabinClass().toString() + "\t" + " Total Fare: $" + totalFareAmount.toString());
+                    counter++;
                 }
             }
             counter = 1;
@@ -272,8 +290,25 @@ public class MainApp {
                     departureDate, numOfPassengers, cabinClass);
                 System.out.println("Flights from " + departureAirport + " Airport to " + transit1AirportName + " Airport for " + numOfPassengers + " Passenger(s)\n");
                 for (FlightSchedule fs : resultList) {
-                    Flight flight = fs.getFlight();
-                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\tCabinClass\tTotal Fare: $");
+                                        Flight flight = fs.getFlight();
+                    Fare fare = null;
+                    List<Fare> fares = fs.getFlightSchedulePlan().getFares();
+                    List<Fare> filteredFares = new ArrayList<>();
+                    for (Fare f : fares) {
+                        if (f.getCabinClassConfig().getCabinClass().equals(cabinClass)) { // preference
+                           filteredFares.add(f);
+                        }
+                    }
+                    if (filteredFares.isEmpty()) {
+                        fares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = fares.get(0);
+                    } else {
+                        filteredFares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = filteredFares.get(0);
+                    }
+                    BigDecimal totalFareAmount = fare.getFareAmount().multiply(new BigDecimal(numOfPassengers));
+                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\t" + fare.getCabinClassConfig().getCabinClass().toString() + "\t" + " Total Fare: $" + totalFareAmount.toString());
+                    counter++;
                 }
                 System.out.print("Select a flight from above (number): ");
                 selection = sc.nextInt();
@@ -290,7 +325,23 @@ public class MainApp {
                 System.out.println("Flights from " + transit1AirportName + " Airport to " + destinationAirport + " Airport for " + numOfPassengers + " Passenger(s)\n");
                 for (FlightSchedule fs : resultList) {
                     Flight flight = fs.getFlight();
-                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\tCabinClass\tTotal Fare: $");
+                    Fare fare = null;
+                    List<Fare> fares = fs.getFlightSchedulePlan().getFares();
+                    List<Fare> filteredFares = new ArrayList<>();
+                    for (Fare f : fares) {
+                        if (f.getCabinClassConfig().getCabinClass().equals(cabinClass)) { // preference
+                           filteredFares.add(f);
+                        }
+                    }
+                    if (filteredFares.isEmpty()) {
+                        fares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = fares.get(0);
+                    } else {
+                        filteredFares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = filteredFares.get(0);
+                    }
+                    BigDecimal totalFareAmount = fare.getFareAmount().multiply(new BigDecimal(numOfPassengers));
+                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\t" + fare.getCabinClassConfig().getCabinClass().toString() + "\t" + " Total Fare: $" + totalFareAmount.toString());
                     counter++;
                 }
                 System.out.print("Select a flight from above (number): ");
@@ -312,7 +363,23 @@ public class MainApp {
                 System.out.println("Flights from " + departureAirport + " Airport to " + transit1AirportName + " Airport for " + numOfPassengers + " Passenger(s)\n");
                 for (FlightSchedule fs : resultList) {
                     Flight flight = fs.getFlight();
-                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\tCabinClass\tTotal Fare: $");
+                    Fare fare = null;
+                    List<Fare> fares = fs.getFlightSchedulePlan().getFares();
+                    List<Fare> filteredFares = new ArrayList<>();
+                    for (Fare f : fares) {
+                        if (f.getCabinClassConfig().getCabinClass().equals(cabinClass)) { // preference
+                           filteredFares.add(f);
+                        }
+                    }
+                    if (filteredFares.isEmpty()) {
+                        fares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = fares.get(0);
+                    } else {
+                        filteredFares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = filteredFares.get(0);
+                    }
+                    BigDecimal totalFareAmount = fare.getFareAmount().multiply(new BigDecimal(numOfPassengers));
+                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\t" + fare.getCabinClassConfig().getCabinClass().toString() + "\t" + " Total Fare: $" + totalFareAmount.toString());
                     counter++;
                 }
                 System.out.print("Select a flight from above (number): ");
@@ -332,7 +399,23 @@ public class MainApp {
                 System.out.println("Flights from " + transit1AirportName + " Airport to " + transit2AirportName + " Airport for " + numOfPassengers + " Passenger(s)\n");
                 for (FlightSchedule fs : resultList) {
                     Flight flight = fs.getFlight();
-                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\tCabinClass\tTotal Fare: $");
+                    Fare fare = null;
+                    List<Fare> fares = fs.getFlightSchedulePlan().getFares();
+                    List<Fare> filteredFares = new ArrayList<>();
+                    for (Fare f : fares) {
+                        if (f.getCabinClassConfig().getCabinClass().equals(cabinClass)) { // preference
+                           filteredFares.add(f);
+                        }
+                    }
+                    if (filteredFares.isEmpty()) {
+                        fares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = fares.get(0);
+                    } else {
+                        filteredFares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = filteredFares.get(0);
+                    }
+                    BigDecimal totalFareAmount = fare.getFareAmount().multiply(new BigDecimal(numOfPassengers));
+                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\t" + fare.getCabinClassConfig().getCabinClass().toString() + "\t" + " Total Fare: $" + totalFareAmount.toString());
                     counter++;
                 }
                 System.out.print("Select a flight from above (number): ");
@@ -350,7 +433,23 @@ public class MainApp {
                 System.out.println("Flights from " + transit2AirportName + " Airport to " + destinationAirport + " Airport for " + numOfPassengers + " Passenger(s)\n");
                 for (FlightSchedule fs : resultList) {
                     Flight flight = fs.getFlight();
-                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\tCabinClass\tTotal Fare: $");
+                    Fare fare = null;
+                    List<Fare> fares = fs.getFlightSchedulePlan().getFares();
+                    List<Fare> filteredFares = new ArrayList<>();
+                    for (Fare f : fares) {
+                        if (f.getCabinClassConfig().getCabinClass().equals(cabinClass)) { // preference
+                           filteredFares.add(f);
+                        }
+                    }
+                    if (filteredFares.isEmpty()) {
+                        fares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = fares.get(0);
+                    } else {
+                        filteredFares.sort((Fare f1, Fare f2) -> f1.getFareAmount().compareTo(f2.getFareAmount()));
+                        fare = filteredFares.get(0);
+                    }
+                    BigDecimal totalFareAmount = fare.getFareAmount().multiply(new BigDecimal(numOfPassengers));
+                    System.out.println("" + counter + ": " + dateTimeFormat.format(fs.getDepartureDateTime()) + "\t" + flight.getFlightNumber() + "\t" + fare.getCabinClassConfig().getCabinClass().toString() + "\t" + " Total Fare: $" + totalFareAmount.toString());
                     counter++;
                 }
                 System.out.print("Select a flight from above (number): ");

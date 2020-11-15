@@ -9,6 +9,7 @@ import com.sun.xml.wss.util.DateUtils;
 import entity.AircraftConfiguration;
 import entity.CabinClassConfiguration;
 import entity.Customer;
+import entity.Fare;
 import entity.Flight;
 import entity.FlightReservation;
 import entity.FlightSchedule;
@@ -112,6 +113,11 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote {
                         flightSchedules.remove(fs);
                     }
                 }
+                for (FlightSchedule fs : flightSchedules) {
+                    for (Fare f : fs.getFlightSchedulePlan().getFares()) {
+                        f.getCabinClassConfig().getCabinClass();
+                    }
+                }
                 return flightSchedules;
             } catch (NoResultException ex) {
                 return new ArrayList<>();
@@ -129,6 +135,11 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote {
                     }
                     if (availableSeats <= numOfPassengers) {
                         flightSchedules.remove(fs);
+                    }
+                }
+                for (FlightSchedule fs : flightSchedules) {
+                    for (Fare f : fs.getFlightSchedulePlan().getFares()) {
+                        f.getCabinClassConfig().getCabinClass();
                     }
                 }
                 return flightSchedules;
@@ -176,6 +187,11 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote {
                         flightSchedules.remove(fs);
                     }
                 }
+                for (FlightSchedule fs : flightSchedules) {
+                    for (Fare f : fs.getFlightSchedulePlan().getFares()) {
+                        f.getCabinClassConfig().getCabinClass();
+                    }
+                }
                 return flightSchedules;
             } catch (NoResultException ex) {
                 return new ArrayList<>();
@@ -198,6 +214,11 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote {
                     }
                     if (availableSeats <= numOfPassengers) {
                         flightSchedules.remove(fs);
+                    }
+                }
+                for (FlightSchedule fs : flightSchedules) {
+                    for (Fare f : fs.getFlightSchedulePlan().getFares()) {
+                        f.getCabinClassConfig().getCabinClass();
                     }
                 }
                 return flightSchedules;
