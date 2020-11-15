@@ -1407,53 +1407,61 @@ public class MainApp {
         
         List<FlightSchedulePlan> flightSchedulePlans = flightOperationSessionBeanRemote.retrieveAllFlightSchedulePlans();
         
-        for (FlightSchedulePlan fsp : flightSchedulePlans) {
-            if (fsp.getEnabled() == true) {
-                FlightRoute flightRoute = fsp.getFlightSchedules().get(0).getFlight().getFlightRoute();
-                System.out.println("Flight Schedule Plan - " + fsp.getFlightNumber());
-                System.out.println("Origin-Destination : " + flightRoute.getOriginAirport().getAirportCode() + "-" + flightRoute.getDestinationAirport().getAirportCode());
-                
-                for (FlightSchedule fs : fsp.getFlightSchedules()) {
-                    System.out.println(fs.getDepartureDateTime() + " --> " + fs.getArrivalDateTime());
-                }
-                System.out.println();
-                
-                for (Fare f : fsp.getFares()) {
-                    System.out.println(f.getFareBasisCode() + ": " + f.getFareAmount());
-                }
-                
-                System.out.print("(0 : skip, 1 : select, other integer : exit) :");
-                
-                response = scanner.nextInt();
-                scanner.nextLine();
-                System.out.println();
-                
-                if (response == 0) {
-                    // skip
-                }
-                if (response == 1) {
-                    response = 0;
-                    System.out.println("1: Update Flight Schedule Plan");
-                    System.out.println("2: Delete Flight Schedule Plan");
-                    System.out.println("Other integer: Return");
-                    
-                    System.out.print("> ");
+        if (flightSchedulePlans.isEmpty()) {
+            System.out.println("... No Flight Schedule Plans available ...\n");
+        }
+        
+        else {
+            for (FlightSchedulePlan fsp : flightSchedulePlans) {
+                if (fsp.getEnabled() == true) {
+                    FlightRoute flightRoute = fsp.getFlightSchedules().get(0).getFlight().getFlightRoute();
+                    System.out.println("Flight Schedule Plan - " + fsp.getFlightNumber());
+                    System.out.println("Origin-Destination : " + flightRoute.getOriginAirport().getAirportCode() + "-" + flightRoute.getDestinationAirport().getAirportCode());
+
+                    fsp.getFlightSchedules().sort((FlightSchedule fs1, FlightSchedule fs2) -> fs1.getDepartureDateTime().compareTo(fs2.getDepartureDateTime()));
+
+                    for (FlightSchedule fs : fsp.getFlightSchedules()) {
+                        System.out.println(fs.getDepartureDateTime() + " --> " + fs.getArrivalDateTime());
+                    }
+                    System.out.println();
+
+                    for (Fare f : fsp.getFares()) {
+                        System.out.println(f.getFareBasisCode() + ": " + f.getFareAmount());
+                    }
+
+                    System.out.print("(0 : skip, 1 : select, other integer : exit) :");
+
                     response = scanner.nextInt();
                     scanner.nextLine();
-                    
-                    if (response == 1) {
-                        doUpdateFlightSchedulePlan(fsp);
+                    System.out.println();
+
+                    if (response == 0) {
+                        // skip
                     }
-                    else if (response == 2) {
-                        doDeleteFlightSchedulePlan(fsp);
+                    if (response == 1) {
+                        response = 0;
+                        System.out.println("1: Update Flight Schedule Plan");
+                        System.out.println("2: Delete Flight Schedule Plan");
+                        System.out.println("Other integer: Return");
+
+                        System.out.print("> ");
+                        response = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if (response == 1) {
+                            doUpdateFlightSchedulePlan(fsp);
+                        }
+                        else if (response == 2) {
+                            doDeleteFlightSchedulePlan(fsp);
+                        }
+                        else {
+                            break;
+                        }
                     }
                     else {
+                        System.out.println();
                         break;
                     }
-                }
-                else {
-                    System.out.println();
-                    break;
                 }
             }
         }
