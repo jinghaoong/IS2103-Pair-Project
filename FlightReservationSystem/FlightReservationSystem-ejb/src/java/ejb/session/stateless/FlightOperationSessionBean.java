@@ -372,7 +372,7 @@ public class FlightOperationSessionBean implements FlightOperationSessionBeanRem
             }
         }
         
-        return null;
+        return flightSchedulePlans;
     }
     
 }
