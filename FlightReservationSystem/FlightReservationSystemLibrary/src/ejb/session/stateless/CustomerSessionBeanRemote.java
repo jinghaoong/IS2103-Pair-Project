@@ -31,9 +31,9 @@ public interface CustomerSessionBeanRemote {
 
     public List<FlightReservation> retrieveFlightReservations(Long customerId);
 
-    public List<List<Flight>> makeConnectingSearch(String departureAirport, String destinationAirport, Date departureDate, Integer numOfPassengers, String cabinClass);
+    public List<FlightSchedule> makeConnectingSearch(String departureAirport, String destinationAirport, Date previousFlightArrivalDateTime, Integer numOfPassengers, String cabinClass);
 
-    public List<Flight> makeDirectSearch(String departureAirport, String destinationAirport, Date departureDate, Integer numOfPassengers, String cabinClass);
+    public List<FlightSchedule> makeDirectSearch(String departureAirport, String destinationAirport, Date departureDate, Integer numOfPassengers, String cabinClass);
 
     public Boolean enoughSeatsInCabin(FlightSchedule flightSchedule, CabinClass cabinClass, Integer numOfPassengers);
     

@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import com.sun.xml.wss.util.DateUtils;
 import entity.AircraftConfiguration;
 import entity.CabinClassConfiguration;
 import entity.Customer;
@@ -12,7 +13,10 @@ import entity.Flight;
 import entity.FlightReservation;
 import entity.FlightSchedule;
 import entity.SeatInventory;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import static java.util.Calendar.DATE;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -83,53 +87,51 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote {
         }
     }
 
+    
     @Override
-    public List<Flight> makeDirectSearch(String departureAirport, String destinationAirport, Date departureDate,
+    public List<FlightSchedule> makeDirectSearch(String departureAirport, String destinationAirport, Date departureDate,
             Integer numOfPassengers, String cabinClass) {
-        
-        long MILLIS_PER_DAY = 86400000;
-        CabinClass cabClass = CabinClass.F;
-        if (!cabinClass.equals("N")) { // if customer has a preference
-            cabClass = CabinClass.valueOf(cabinClass);
-        }
-        
-        // all cabin classes all dates
-        Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.departureDateTime.getTime()/MILLIS_PER_DAY = :inDepartureDate AND fs.flight.flightRoute.originAirport.airportName = :inDepartureAirport AND fs.flight.flightRoute.destinationAirport = :inDestinationAirport AND fs.seatInventories.available >= :inPax")
+
+        // all cabin classes
+        Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.departureDate = :inDepartureDate AND fs.flight.flightRoute.originAirport.airportName = :inDepartureAirport AND fs.flight.flightRoute.destinationAirport.airportName = :inDestinationAirport")
                 .setParameter("inDepartureAirport", departureAirport)
                 .setParameter("inDestinationAirport", destinationAirport)
-                .setParameter("inDepartureDate", departureDate.getTime()/MILLIS_PER_DAY)
-                .setParameter("inPax", numOfPassengers);
+                .setParameter("inDepartureDate", departureDate);
         
-        if (!cabinClass.equals("N")) { // has a preference
+        CabinClass cabClass = CabinClass.valueOf("F");
+        if (cabinClass.equals("F") || cabinClass.equals("J") || cabinClass.equals("W") || cabinClass.equals("L")) { // if customer has a preference
+            cabClass = CabinClass.valueOf(cabinClass);
+            
             try {
                 List<FlightSchedule> flightSchedules = query.getResultList();
-                List<Flight> flights = new ArrayList<>();
                 for (FlightSchedule fs : flightSchedules) {
                     Flight flight = fs.getFlight();
-                    if (enoughSeatsInCabin(fs, cabClass, numOfPassengers)) {
-                        flights.add(flight);
+                    fs.getFlight().getAircraftConfig().getCabinClassConfigs().size();
+                    fs.getSeatInventories().size();
+                    if (!enoughSeatsInCabin(fs, cabClass, numOfPassengers)) {
+                        flightSchedules.remove(fs);
                     }
                 }
-                return flights;
+                return flightSchedules;
             } catch (NoResultException ex) {
                 return new ArrayList<>();
             }
+            
         } else { // no preference
             try {
                 List<FlightSchedule> flightSchedules = query.getResultList();
-                List<Flight> flights = new ArrayList<>();
                 for (FlightSchedule fs : flightSchedules) {
-                    Flight flight = fs.getFlight();
                     Integer availableSeats = 0;
+                    fs.getSeatInventories().size();
                     List<SeatInventory> seatInventories = fs.getSeatInventories();
                     for (SeatInventory si : seatInventories) {
                         availableSeats += si.getAvailable();
                     }
-                    if (availableSeats >= numOfPassengers) {
-                        flights.add(flight);
+                    if (availableSeats <= numOfPassengers) {
+                        flightSchedules.remove(fs);
                     }
                 }
-                return flights;
+                return flightSchedules;
             } catch (NoResultException ex) {
                 return new ArrayList<>();
             }
@@ -149,16 +151,60 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote {
                 return true;
             }
         }
-        
         return false;
     }
     
     @Override
-    public List<List<Flight>> makeConnectingSearch(String departureAirport, String destinationAirport, Date departureDate,
+    public List<FlightSchedule> makeConnectingSearch(String departureAirport, String destinationAirport, Date previousFlightArrivalDateTime,
             Integer numOfPassengers, String cabinClass) {
         
+        Query query = em.createQuery("SELECT fs FROM FlightSchedule fs WHERE fs.flight.flightRoute.originAirport.airportName = :inDepartureAirport AND fs.flight.flightRoute.destinationAirport.airportName = :inDestinationAirport")
+                .setParameter("inDepartureAirport", departureAirport)
+                .setParameter("inDestinationAirport", destinationAirport);
         
-        return new ArrayList<>();
+        CabinClass cabClass = CabinClass.valueOf("F");
+        if (cabinClass.equals("F") || cabinClass.equals("J") || cabinClass.equals("W") || cabinClass.equals("L")) { // if customer has a preference
+            cabClass = CabinClass.valueOf(cabinClass);
+            
+            try {
+                List<FlightSchedule> flightSchedules = query.getResultList();
+                for (FlightSchedule fs : flightSchedules) {
+                    Flight flight = fs.getFlight();
+                    fs.getFlight().getAircraftConfig().getCabinClassConfigs().size();
+                    fs.getSeatInventories().size();
+                    if (fs.getDepartureDateTime().before(previousFlightArrivalDateTime) || !enoughSeatsInCabin(fs, cabClass, numOfPassengers)) {
+                        flightSchedules.remove(fs);
+                    }
+                }
+                return flightSchedules;
+            } catch (NoResultException ex) {
+                return new ArrayList<>();
+            }
+        
+        } else { // no preference
+            
+            try {
+                List<FlightSchedule> flightSchedules = query.getResultList();
+                for (FlightSchedule fs : flightSchedules) {
+                    if (fs.getDepartureDateTime().before(previousFlightArrivalDateTime)) {
+                        flightSchedules.remove(fs);
+                    }
+                    fs.getSeatInventories().size();
+                    Integer availableSeats = 0;
+                    fs.getSeatInventories().size();
+                    List<SeatInventory> seatInventories = fs.getSeatInventories();
+                    for (SeatInventory si : seatInventories) {
+                        availableSeats += si.getAvailable();
+                    }
+                    if (availableSeats <= numOfPassengers) {
+                        flightSchedules.remove(fs);
+                    }
+                }
+                return flightSchedules;
+            } catch (NoResultException ex) {
+                return new ArrayList<>();
+            }
+        }
     }
 
     @Override
