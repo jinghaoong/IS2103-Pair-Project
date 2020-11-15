@@ -40,7 +40,7 @@ import util.exception.AirportNotFoundException;
 import util.exception.EmployeeNotFoundException;
 import util.exception.FareBasisCodeExistException;
 import util.exception.FlightAlreadyExistException;
-import util.exception.FlightNumberDoesNotExistException;
+import util.exception.FlightNumberDisabledException;
 import util.exception.FlightRouteAlreadyExistException;
 import util.exception.FlightRouteNotFoundException;
 import util.exception.FlightScheduleOverlapException;
@@ -693,10 +693,11 @@ public class MainApp {
         
         for (FlightRoute fr : flightRoutes) {
             if (fr.getEnabled() == true) { // check whether flight route is disabled
-                System.out.println("Flight Route: " + fr.getOriginAirport().getAirportName() + " -> " + fr.getDestinationAirport().getAirportName());
+                System.out.println("Flight Route: " + fr.getOriginAirport().getAirportName() + " -> " + fr.getDestinationAirport().getAirportName() + " (" + fr.getOriginAirport().getAirportCode() + "-" + fr.getDestinationAirport().getAirportCode() + ")");
                 if (fr.getReturnFlightRoute() != null) {
-                    System.out.println("\tReturn: " + fr.getDestinationAirport().getAirportName() + " -> " + fr.getOriginAirport().getAirportName());
+                    System.out.println("\tReturn: " + fr.getDestinationAirport().getAirportName() + " -> " + fr.getOriginAirport().getAirportName() + " (" + fr.getDestinationAirport().getAirportCode() + "-" + fr.getOriginAirport().getAirportCode() + ")");
                 }
+                System.out.println();
             }
             //System.out.println();
         }
@@ -1303,7 +1304,7 @@ public class MainApp {
                         break;
                     }
                 }
-                catch (FlightNumberDoesNotExistException | InvalidDateTimeException | FlightScheduleOverlapException | InvalidDurationException | FareBasisCodeExistException | ViolationException ex) {
+                catch (FlightNumberDisabledException | InvalidDateTimeException | FlightScheduleOverlapException | InvalidDurationException | FareBasisCodeExistException | ViolationException ex) {
                     System.out.println("\nFollowing error(s) occurred: " + ex.getMessage() + "\n");
                 }
             }
@@ -1466,7 +1467,7 @@ public class MainApp {
         
         System.out.println("*** Update Flight Schedule Plan ***\n");
         
-        List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
+        //List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
         List<Fare> fares = flightSchedulePlan.getFares();
         
         /*
@@ -1577,7 +1578,7 @@ public class MainApp {
                 }
             }
         }
-        catch (FlightNumberDoesNotExistException ex) {
+        catch (FlightNumberDisabledException ex) {
             System.out.println("Following error occurred: " + ex.getMessage());
         }
         
@@ -1647,7 +1648,7 @@ public class MainApp {
                 }
             }
         }
-        catch (FlightNumberDoesNotExistException ex) {
+        catch (FlightNumberDisabledException ex) {
             System.out.println("Following error occurred: " + ex.getMessage());
         }
         
