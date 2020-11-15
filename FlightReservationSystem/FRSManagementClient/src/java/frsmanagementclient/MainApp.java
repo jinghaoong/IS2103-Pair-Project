@@ -1012,7 +1012,11 @@ public class MainApp {
                         scanner.nextLine();
                         System.out.print("Enter end date (yyyy-MM-dd): ");
                         try {
-                            flightSchedulePlan.setEndDate(dateFormat.parse(scanner.nextLine().trim()));
+                            Date date = dateFormat.parse(scanner.nextLine().trim());
+                            Calendar temp = Calendar.getInstance();
+                            temp.setTime(date);
+                            temp.add(DATE, 1);
+                            flightSchedulePlan.setEndDate(temp.getTime());
                         }
                         catch (ParseException ex) {
                             throw new InvalidDateTimeException("Invalid end date format entered!");
@@ -1049,7 +1053,7 @@ public class MainApp {
                             currDateTime.add(DAY_OF_MONTH, nDay);
                             currFlightSchedule = nextFlightSchedule;
                             
-                            System.out.println(currDateTime);
+                            //System.out.println(currDateTime);
                         }
                         
                     }
@@ -1063,7 +1067,11 @@ public class MainApp {
                         flightSchedulePlan.setDayOfWeek(dayOfWeek);
                         System.out.print("Enter end date (yyyy-MM-dd): ");
                         try {
-                            flightSchedulePlan.setEndDate(dateFormat.parse(scanner.nextLine().trim()));
+                            Date date = dateFormat.parse(scanner.nextLine().trim());
+                            Calendar temp = Calendar.getInstance();
+                            temp.setTime(date);
+                            temp.add(DATE, 1);
+                            flightSchedulePlan.setEndDate(temp.getTime());
                         }
                         catch (ParseException ex) {
                             throw new InvalidDateTimeException("Invalid end date format entered!");
@@ -1104,7 +1112,7 @@ public class MainApp {
                     response = 0;
                     
                     for (FlightSchedule fs : flightSchedules) {
-                        System.out.println(fs.getDepartureDateTime().toString());
+                        //System.out.println(fs.getDepartureDateTime().toString());
                         fs.setFlightSchedulePlan(flightSchedulePlan);
                         flightSchedulePlan.getFlightSchedules().add(fs);
                     }
@@ -1202,7 +1210,7 @@ public class MainApp {
                         
                         flightSchedulePlan.setReturnFlightSchedulePlan(returnFlightSchedulePlan);
                         flightSchedulePlan = flightOperationSessionBeanRemote.updateFlightSchedulePlan(flightSchedulePlan);
-                        
+                        System.out.println("Return Flight Schedule Plan successfully created!\n");
                     } else {
                         response = 5;
                         System.out.println("Returning to menu ...");
@@ -1251,8 +1259,10 @@ public class MainApp {
             flightSchedule.setEstimatedFlightDurationMinute(durationMinute);
             flightSchedule.computeAndSetArrivalDateTime();
             
+            /*
             System.out.println(date);
             System.out.println(flightSchedule.getArrivalDateTime());
+            */
             
             flightSchedule = flightOperationSessionBeanRemote.createFlightSchedule(flightSchedule); // catch FlightScheduleOverlapException
             
@@ -1313,9 +1323,11 @@ public class MainApp {
             if (fsp.getEnabled() == true) {
                 System.out.println("Flight Schedule Plan - " + fsp.getFlightNumber());
                 System.out.println("First departure date/time : " + fsp.getStartDate());
-                System.out.print("0 : skip, 1 : select, other integer : exit");
+                System.out.print("(0 : skip, 1 : select, other integer : exit) :");
+                
                 response = scanner.nextInt();
                 scanner.nextLine();
+                System.out.println();
                 
                 if (response == 0) {
                     // skip
@@ -1353,11 +1365,34 @@ public class MainApp {
     }
     
     private void doUpdateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
-        
+        // 
     }
     
     private void doDeleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
         
+        System.out.println("*** Delete Flight Schedule Plan ***");
+        
+        List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
+        
+        for (FlightSchedule fs : flightSchedules) {
+            if (!fs.getFlightReservations().isEmpty()) {
+                flightSchedulePlan.setEnabled(Boolean.FALSE);
+                System.out.println("Flight Schedule Plan disabled.\n");
+                return;
+            }
+        }
+        
+        System.out.println("Confirm deletion? (Y : delete)");
+        String response = scanner.nextLine().trim();
+        System.out.println();
+        
+        if (response.equalsIgnoreCase("Y")) {
+            flightOperationSessionBeanRemote.deleteFlightSchedulePlan(flightSchedulePlan);
+            System.out.println("Flight Schedule Plan successfully deleted!\n");
+        }
+        else {
+            System.out.println("Deletion cancelled, returning to menu ...\n");
+        }
     }
     
     /*
