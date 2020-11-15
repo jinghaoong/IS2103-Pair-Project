@@ -15,7 +15,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import util.exception.FareBasisCodeExistException;
 import util.exception.FlightAlreadyExistException;
-import util.exception.FlightNumberDoesNotExistException;
+import util.exception.FlightNumberDisabledException;
 import util.exception.FlightScheduleOverlapException;
 import util.exception.ViolationException;
 
@@ -34,7 +34,7 @@ public interface FlightOperationSessionBeanRemote {
 
     List<Flight> retrieveAllFlights();
 
-    Flight retrieveFlightByNumber(String flightNumber) throws FlightNumberDoesNotExistException;
+    Flight retrieveFlightByNumber(String flightNumber) throws FlightNumberDisabledException;
 
     String deleteFlight(Flight flight);
 
