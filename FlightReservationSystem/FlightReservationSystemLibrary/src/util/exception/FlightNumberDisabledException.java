@@ -9,13 +9,13 @@ package util.exception;
  *
  * @author jinghao
  */
-public class FlightNumberDoesNotExistException extends Exception {
+public class FlightNumberDisabledException extends Exception {
 
     /**
      * Creates a new instance of <code>FlightNumberExistException</code> without
      * detail message.
      */
-    public FlightNumberDoesNotExistException() {
+    public FlightNumberDisabledException() {
     }
 
     /**
@@ -24,7 +24,7 @@ public class FlightNumberDoesNotExistException extends Exception {
      *
      * @param msg the detail message.
      */
-    public FlightNumberDoesNotExistException(String msg) {
+    public FlightNumberDisabledException(String msg) {
         super(msg);
     }
 }
